@@ -8,7 +8,7 @@ public class AlienSprite extends ActiveSprite {
 	private static final int HEIGHT = 32;
 	private static final int WIDTH = 32;
 	private static final int X_SHIFT_DISTANCE = 10;
-	private static final int Y_SHIFT_DISTANCE = -15;
+	private static final int Y_SHIFT_DISTANCE = 15;
 	private static final double SHOOTING_PROBABILITY = 0.2;
 	
 	private static Image[] explosionFrames;
@@ -26,7 +26,8 @@ public class AlienSprite extends ActiveSprite {
 	private int explosionFrame = -1;
 	private boolean onFirstFrame = true;
 	private boolean isDead = false;
-	private boolean shiftY = false;
+	private boolean shiftingY = false;
+	private boolean justShiftedY = false;
 	private boolean isShooting = false;
 	
 	// need to add random shooting
@@ -89,17 +90,22 @@ public class AlienSprite extends ActiveSprite {
 	public void update(Screen screen, KeyboardInput keyboard, long actual_delta_time) {
 		previousTime += actual_delta_time;
 		
+		collidedWithObject(screen, getCenterX(), getCenterY());
+		
 		if (!isDead && previousTime >= shiftPeriod) {
 			isShooting = Math.random() < SHOOTING_PROBABILITY;
 			onFirstFrame ^= true;
 			previousTime -= shiftPeriod;
 			
-			if (shiftY) {
-				direction *= -1;
-				shiftY = false;
-				setCenterY(getCenterY() + Y_SHIFT_DISTANCE); // this set center won't work
-															// instead get the delta x and y and add center
+			if (shiftingY) {
+				shiftingY = false;
+				justShiftedY = true;
+				setCenterY(getCenterY() + Y_SHIFT_DISTANCE); 
 			} else {
+				if (justShiftedY) {
+					direction *= -1;
+					justShiftedY = false;
+				}
 				setCenterX(getCenterX() + (X_SHIFT_DISTANCE * direction));
 			}
 			
@@ -112,18 +118,19 @@ public class AlienSprite extends ActiveSprite {
 		}
 	}
 	
-	private void collidedWithObject(Screen screen, double deltaX, double deltaY) {
+	private void collidedWithObject(Screen screen, double centerX, double centerY) {
 		for (ActiveSprite activeSprite : screen.getActiveSprites()) {
 			if (activeSprite instanceof ProjectileSprite) {
 				isDead = CollisionDetection.overlaps(
-						getMinX() + deltaX,
-						getMaxY() + deltaY, 
-						getMaxX() + deltaX, 
-						getMinY() + deltaY, 
+						getMinX(),
+						getMaxY(), 
+						getMaxX(), 
+						getMinY(), 
 						activeSprite.getMinX() + activeSprite.getCenterX(), 
 						activeSprite.getMaxY() + activeSprite.getCenterY(),
 						activeSprite.getMaxX() + activeSprite.getCenterX(),
 						activeSprite.getMinY() + activeSprite.getCenterY());
+				
 				
 				if (isDead) {
 					// add the point value to the screen.score once it is created
@@ -137,19 +144,19 @@ public class AlienSprite extends ActiveSprite {
 		for (StaticSprite staticSprite : screen.getStaticSprites()) {
 			if (staticSprite instanceof BarrierSprite) {
 				boolean onScreenEdge = CollisionDetection.overlaps(
-						getMinX() + deltaX,
-						getMaxY() + deltaY, 
-						getMaxX() + deltaX, 
-						getMinY() + deltaY, 
+						getMinX(),
+						getMinY(), 
+						getMaxX(), 
+						getMaxY(), 
 						staticSprite.getMinX(), 
-						staticSprite.getMaxY(),
+						staticSprite.getMinY(),
 						staticSprite.getMaxX(),
-						staticSprite.getMinY());
+						staticSprite.getMaxY());
 				
-				if (onScreenEdge) {
+				if (!justShiftedY && !shiftingY && onScreenEdge) {
 					for (ActiveSprite activeSprite : screen.getActiveSprites()) {
 						if (activeSprite instanceof AlienSprite) {
-							((AlienSprite) activeSprite).shiftY = true;
+							((AlienSprite) activeSprite).shiftY();
 						}
 					}
 					break;
@@ -157,4 +164,9 @@ public class AlienSprite extends ActiveSprite {
 			}
 		}
 	}
+	
+	public void shiftY() {
+		shiftingY = true;
+	}
 }
+
