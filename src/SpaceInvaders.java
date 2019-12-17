@@ -157,9 +157,31 @@ public class SpaceInvaders extends JFrame {
 	}
 	
 	public void animationLoop() {
+		screen = new MenuScreen();
+		staticSprites = screen.getStaticSprites();
+		activeSprites = screen.getActiveSprites();
+		
 		while(true) {
+			last_refresh_time = System.currentTimeMillis();
+			next_refresh_time = current_time + minimum_delta_time;
+
+			while (current_time < next_refresh_time) {
+				Thread.yield();
+
+				try {
+					Thread.sleep(1);
+				}
+				catch(Exception e) {    					
+				} 
+
+				current_time = System.currentTimeMillis();
+			}
+			
 			keyboard.poll();
 			handleKeyboardInput();
+			updateTime();
+			screen.update(keyboard, actual_delta_time);
+			repaint();
 		}
 	}
 	
@@ -169,19 +191,21 @@ public class SpaceInvaders extends JFrame {
 		}
 	}
 	
+	private void updateTime() {
+		current_time = System.currentTimeMillis();
+		actual_delta_time = (isPaused ? 0 : current_time - last_refresh_time);
+		last_refresh_time = current_time;
+		elapsed_time += actual_delta_time;
+	}
+	
 	class DrawPanel extends JPanel {
 
-		public void paintComponent(Graphics g)
-		{	
+		public void paintComponent(Graphics g) {	
 			if (screen == null) {
 				return;
 			}
-
-//			if (player1 != null && centreOnPlayer) {
-//				xCenter = player1.getCenterX();
-//				yCenter = player1.getCenterY();     
-//			}
-
+			
+			
 			for (StaticSprite staticSprite : staticSprites) {
 				if (staticSprite.getShowImage()) {
 					if (staticSprite.getImage() != null) {
@@ -196,8 +220,7 @@ public class SpaceInvaders extends JFrame {
 			for (ActiveSprite activeSprite : activeSprites) {
 				if (activeSprite.getImage() != null) {
 					g.drawImage(activeSprite.getImage(), translateX(activeSprite.getMinX()), translateY(activeSprite.getMinY()), scaleX(activeSprite.getWidth()), scaleY(activeSprite.getHeight()), null);
-				}
-				else {
+				} else {
 					g.setColor(Color.BLUE);
 					g.fillRect(translateX(scale * (activeSprite.getMinX())), translateY(activeSprite.getMinY()), scaleX(activeSprite.getWidth()), scaleY(activeSprite.getHeight()));					
 				}
