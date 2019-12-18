@@ -16,7 +16,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
-import javax.swing.border.EmptyBorder;
 
 public class SpaceInvaders extends JFrame {
 	
@@ -34,6 +33,8 @@ public class SpaceInvaders extends JFrame {
 	
 	private JPanel panel = null;
 	private JLabel lblScore;
+	private FadeLabel lblPressPToPlay;
+	private JLabel lblSpaceInvaders;
 	
 	private static Thread game;
 	
@@ -42,10 +43,11 @@ public class SpaceInvaders extends JFrame {
 	private long last_refresh_time = 0;
 	private long minimum_delta_time = 1000 / FRAMES_PER_SECOND;
 	private long actual_delta_time = 0;
-	private long elapsed_time = 0;
 	private boolean isPaused = false;
 	private float fadeDirection = -0.07f;
 	private String score;
+	
+	private boolean playing = false;
 	
 	private ArrayList<ActiveSprite> activeSprites = null;
 	private ArrayList<StaticSprite> staticSprites = null;
@@ -95,7 +97,7 @@ public class SpaceInvaders extends JFrame {
 		panel.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 		getContentPane().add(panel, BorderLayout.CENTER);
 		
-		JLabel lblSpaceInvaders = new JLabel("Space Invaders", SwingConstants.CENTER);
+		lblSpaceInvaders = new JLabel("Space Invaders", SwingConstants.CENTER);
 		lblSpaceInvaders.setFont(new Font("Lucida Console", Font.BOLD, 70));
 		lblSpaceInvaders.setForeground(Color.WHITE);
 		lblSpaceInvaders.setBounds(10, 200, 714, 84);
@@ -116,7 +118,7 @@ public class SpaceInvaders extends JFrame {
 		getContentPane().add(lblScore);
 		getContentPane().setComponentZOrder(lblScore, 0);
 		
-		FadeLabel lblPressPToPlay = new FadeLabel("press P to play", SwingConstants.CENTER);
+		lblPressPToPlay = new FadeLabel("press P to play", SwingConstants.CENTER);
 		lblPressPToPlay.setFont(new Font("Lucida Console", Font.PLAIN, 29));
 		lblPressPToPlay.setForeground(Color.WHITE);
 		lblPressPToPlay.setBounds(10, 308, 714, 46);
@@ -157,10 +159,6 @@ public class SpaceInvaders extends JFrame {
 	}
 	
 	public void animationLoop() {
-		screen = new MenuScreen();
-		staticSprites = screen.getStaticSprites();
-		activeSprites = screen.getActiveSprites();
-		
 		while(true) {
 			last_refresh_time = System.currentTimeMillis();
 			next_refresh_time = current_time + minimum_delta_time;
@@ -180,14 +178,25 @@ public class SpaceInvaders extends JFrame {
 			keyboard.poll();
 			handleKeyboardInput();
 			updateTime();
-			screen.update(keyboard, actual_delta_time);
+			if (playing) {
+				screen.update(keyboard, actual_delta_time);
+			}
 			repaint();
 		}
 	}
 	
 	private void handleKeyboardInput() {
 		if (keyboard.keyDown(80)) {
-			// play the game
+			if (!playing) {
+				screen = new SpaceInvadersScreen();
+				staticSprites = screen.getStaticSprites();
+				activeSprites = screen.getActiveSprites();
+				lblPressPToPlay.setVisible(false);
+				lblSpaceInvaders.setVisible(false);
+				lblScore.setText("0");
+				playing = true;
+			}
+			// remove everything else off screen and change the highscore to 0
 		}
 	}
 	
@@ -195,24 +204,18 @@ public class SpaceInvaders extends JFrame {
 		current_time = System.currentTimeMillis();
 		actual_delta_time = (isPaused ? 0 : current_time - last_refresh_time);
 		last_refresh_time = current_time;
-		elapsed_time += actual_delta_time;
 	}
 	
 	class DrawPanel extends JPanel {
-
 		public void paintComponent(Graphics g) {	
 			if (screen == null) {
 				return;
 			}
 			
-			
 			for (StaticSprite staticSprite : staticSprites) {
 				if (staticSprite.getShowImage()) {
 					if (staticSprite.getImage() != null) {
 						g.drawImage(staticSprite.getImage(), translateX(staticSprite.getMinX()), translateY(staticSprite.getMinY()), scaleX(staticSprite.getWidth()), scaleY(staticSprite.getHeight()), null);
-					} else {
-						g.setColor(Color.RED);
-						g.fillRect(translateX(staticSprite.getMinX()), translateY(staticSprite.getMinY()),scaleX(staticSprite.getWidth()), scaleY(staticSprite.getHeight()));					
 					}
 				}
 			}
