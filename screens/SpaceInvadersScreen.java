@@ -1,11 +1,13 @@
 public class SpaceInvadersScreen extends Screen {
 
+	private boolean isPaused = false;
+	
 	public SpaceInvadersScreen() {
 		super();
 		setXCenter(0);
 		setYCenter(0);
 		
-		BarrierSprite rightBarrier = new BarrierSprite(350, -250, 340, 270);
+		BarrierSprite rightBarrier = new BarrierSprite(345, -250, 335, 270);
 		BarrierSprite leftBarrier = new BarrierSprite(-363, -250, -353, 270);
 		
 		int alienType = 3;
@@ -35,8 +37,14 @@ public class SpaceInvadersScreen extends Screen {
 
 	@Override
 	public void update(KeyboardInput keyboard, long actual_delta_time) {
-		updateSprites(keyboard, actual_delta_time);
-		disposeSprites();
+		if (keyboard.keyDownOnce(80)) {
+			isPaused ^= true;
+		}
+		
+		if (!isPaused) {
+			updateSprites(keyboard, actual_delta_time);
+			disposeSprites();
+		}
+		
 	}
-
 }
