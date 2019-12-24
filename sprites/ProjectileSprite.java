@@ -1,8 +1,6 @@
 import java.awt.Image;
-import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -14,9 +12,9 @@ public class ProjectileSprite extends ActiveSprite {
 
 	private AudioPlayer projectileSound = null;
 	
-	private double velocityY = 0;
+	private double velocityY;
 	
-	public ProjectileSprite(double centerX, double centerY, double velocityY, String audioFile) {
+	ProjectileSprite(double centerX, double centerY, double velocityY, String audioFile) {
 
 		super();
 		this.setCenterX(centerX);

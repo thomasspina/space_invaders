@@ -12,12 +12,12 @@ public class KeyboardInput implements KeyListener {
 	}
 
 	// Current state of the keyboard
-	private boolean[] currentKeys = null;
+	private boolean[] currentKeys;
 
 	// Polled keyboard state
-	private KeyState[] keys = null;
+	private KeyState[] keys;
 
-	public KeyboardInput() {
+	KeyboardInput() {
 		currentKeys = new boolean[ KEY_COUNT ];
 		keys = new KeyState[ KEY_COUNT ];
 		for( int i = 0; i < KEY_COUNT; ++i ) {
@@ -25,7 +25,7 @@ public class KeyboardInput implements KeyListener {
 		}
 	}
 
-	public synchronized void poll() {
+	synchronized void poll() {
 		for( int i = 0; i < KEY_COUNT; ++i ) {
 			// Set the key state 
 			if( currentKeys[ i ] ) {
@@ -47,7 +47,7 @@ public class KeyboardInput implements KeyListener {
 				keys[ keyCode ] == KeyState.PRESSED;
 	}
 
-	public boolean keyDownOnce( int keyCode ) {
+	boolean keyDownOnce( int keyCode ) {
 		return keys[ keyCode ] == KeyState.ONCE;
 	}
 

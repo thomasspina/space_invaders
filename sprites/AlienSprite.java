@@ -35,7 +35,7 @@ public class AlienSprite extends ActiveSprite {
 	private long previousTime = 0;
 	private int shiftPeriod = 300;
 	
-	public AlienSprite(int alienType, double centerX, double centerY) {
+	AlienSprite(int alienType, double centerX, double centerY) {
 		super();
 		setCenterX(centerX);
 		setCenterY(centerY);
@@ -165,7 +165,7 @@ public class AlienSprite extends ActiveSprite {
 		}
 	}
 	
-	public void shiftY() {
+	private void shiftY() {
 		shiftingY = true;
 	}
 }

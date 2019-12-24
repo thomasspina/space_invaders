@@ -1,5 +1,4 @@
 import java.io.File;
-import java.io.IOException;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -12,9 +11,9 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class AudioPlayer implements LineListener {
 
-	public static boolean stopAll = false;
+	private static boolean stopAll = false;
 
-	Thread audioThread = null;
+	private Thread audioThread = null;
 	private boolean playCompleted = true;
 	private boolean stop = false; 
 
@@ -40,25 +39,22 @@ public class AudioPlayer implements LineListener {
 
 	}
 
-	public void playAsynchronous(String file)
+	void playAsynchronous(String file)
 	{	    	
 		stop = false;
-		audioThread = new Thread()
-		{
-			public void run()
-			{
-				playCompleted = false;
-				play(file);
-				playCompleted = true;
-			}
-		};
+		audioThread = new Thread(() -> {
+			playCompleted = false;
+			play(file);
+			playCompleted = true;
+		});
+
 		audioThread.start();
 
 		audioThread = null;
 
 	}	 
 
-	void play(String audioFilePath) {
+	private void play(String audioFilePath) {
 		File audioFile = new File(audioFilePath);
 
 		try {

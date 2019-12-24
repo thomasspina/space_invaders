@@ -1,14 +1,8 @@
 import java.awt.Image;
-import java.awt.Rectangle;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import javax.imageio.ImageIO;
 
 public abstract class StaticSprite extends Sprite {
 
-	private static Image image;
+	protected static Image image;
 	protected boolean showImage = true;
 	protected double minX = 0;
 	protected double minY = 0;
@@ -17,9 +11,9 @@ public abstract class StaticSprite extends Sprite {
 
 	public abstract Image getImage();
 	
-	public StaticSprite() {}
+	StaticSprite() {}
 
-	public boolean getShowImage() {
+	boolean getShowImage() {
 		return showImage;
 	}
 

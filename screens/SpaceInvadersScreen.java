@@ -2,7 +2,7 @@ public class SpaceInvadersScreen extends Screen {
 
 	private boolean isPaused = false;
 	
-	public SpaceInvadersScreen() {
+	SpaceInvadersScreen() {
 		super();
 		setXCenter(0);
 		setYCenter(0);

@@ -16,7 +16,7 @@ public abstract class ActiveSprite extends Sprite {
 	public abstract void update(Screen level, KeyboardInput keyboard, long actual_delta_time);
 	public abstract Image getImage();
 	
-	public ActiveSprite() {
+	ActiveSprite() {
 	}
 	
 	public final double getMinX() {
@@ -43,27 +43,27 @@ public abstract class ActiveSprite extends Sprite {
 		return width;
 	}
 
-	public double getCenterX() {
+	double getCenterX() {
 		return centerX;
 	}
 
-	public double getCenterY() {
+	double getCenterY() {
 		return centerY;
 	}
 	
-	public final void setCenterX(double centerX) {
+	final void setCenterX(double centerX) {
 		this.centerX = centerX;
 	}
 	
-	public final void setCenterY(double centerY) {
+	final void setCenterY(double centerY) {
 		this.centerY = centerY;
 	}
 
-	public void setWidth(double width) {
+	void setWidth(double width) {
 		this.width = width;
 	}
 
-	public void setHeight(double height) {
+	void setHeight(double height) {
 		this.height = height;
 	}
 	
@@ -71,7 +71,7 @@ public abstract class ActiveSprite extends Sprite {
 		centerX += delta;		
 	}
 
-	public final void addCenterY(double delta) {
+	final void addCenterY(double delta) {
 		centerY += delta;		
 	}
 	
@@ -83,11 +83,11 @@ public abstract class ActiveSprite extends Sprite {
 		centerY = minY + (height / 2);
 	}
 				
-	public boolean getDispose() {
+	boolean getDispose() {
 		return dispose;
 	}
 
-	public void setDispose() {
+	void setDispose() {
 		dispose = true;
 	}
 }

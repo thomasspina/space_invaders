@@ -7,13 +7,13 @@ import javax.swing.JLabel;
 public class FadeLabel extends JLabel {
 	private float alpha;
 	
-	public FadeLabel(String text, int horizontalAlignment) {
+	FadeLabel(String text, int horizontalAlignment) {
 		setText(text);
 		setHorizontalAlignment(horizontalAlignment);
 		setAlpha(1f);
 	}
 	
-	public void setAlpha(float value) {
+	void setAlpha(float value) {
         if (alpha != value) {
             float old = alpha;
             alpha = value;
@@ -22,7 +22,7 @@ public class FadeLabel extends JLabel {
         }
     }
 
-    public float getAlpha() {
+    float getAlpha() {
         return alpha;
     }
     

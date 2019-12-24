@@ -5,31 +5,25 @@ public abstract class Screen {
 	//STATIC VARIABLES
 	
 	//INSTANCE VARIABLES
-	protected double scale = 1;
-	protected double xCenter = 0;		//point in universe on which the screen will center
-	protected double yCenter = 0;
-	
-	protected boolean complete = false;
-	
-	protected double accelarationX = 0; //per second per second
-	protected double accelarationY = 600; //per second per second    
-	
-	protected ActiveSprite player1 = null;
-	protected ArrayList<ActiveSprite> activeSprites = new ArrayList<ActiveSprite>();
-	protected ArrayList<StaticSprite> staticSprites = new ArrayList<StaticSprite>();
+	private double xCenter = 0;		//point in universe on which the screen will center
+	private double yCenter = 0;
+
+	private boolean complete = false;
+
+	private double accelarationX = 0; //per second per second
+	private double accelarationY = 600; //per second per second
+
+	private ActiveSprite player1 = null;
+	protected ArrayList<ActiveSprite> activeSprites;
+	protected ArrayList<StaticSprite> staticSprites;
 
 	//require a separate list for sprites to be removed to avoid a concurence exception
-	private ArrayList<ActiveSprite> disposalList = new ArrayList<ActiveSprite>();
+	private ArrayList<ActiveSprite> disposalList = new ArrayList<>();
 
-	public Screen() {
-		activeSprites = new ArrayList<ActiveSprite>();
-		staticSprites = new ArrayList<StaticSprite>();
+	Screen() {
+		activeSprites = new ArrayList<>();
+		staticSprites = new ArrayList<>();
 	}
-	
-	public double getScale() {
-		return scale;
-	}
-
 
 	public double getXCenter() {
 		return xCenter;
@@ -40,11 +34,11 @@ public abstract class Screen {
 		return yCenter;
 	}
 	
-	public void setXCenter(double xCenter) {
+	void setXCenter(double xCenter) {
 		this.xCenter = xCenter;
 	}
 
-	public void setYCenter(double yCenter) {
+	void setYCenter(double yCenter) {
 		this.yCenter = yCenter;
 	}
 	
@@ -68,11 +62,11 @@ public abstract class Screen {
 		return player1;
 	}
 
-	public ArrayList<ActiveSprite> getActiveSprites() {
+	ArrayList<ActiveSprite> getActiveSprites() {
 		return activeSprites;
 	}
 
-	public ArrayList<StaticSprite> getStaticSprites() {
+	ArrayList<StaticSprite> getStaticSprites() {
 		return staticSprites;
 	}
 
@@ -84,25 +78,23 @@ public abstract class Screen {
 
 	public abstract void update(KeyboardInput keyboard, long actual_delta_time);
 	
-    protected void updateSprites(KeyboardInput keyboard, long actual_delta_time) {
-		for (int i = 0; i < activeSprites.size(); i++) {
-			ActiveSprite sprite = activeSprites.get(i);
-    		sprite.update(this, keyboard, actual_delta_time);
+	void updateSprites(KeyboardInput keyboard, long actual_delta_time) {
+		for (ActiveSprite activeSprite : activeSprites) {
+			activeSprite.update(this, keyboard, actual_delta_time);
     	}    	
     }
     
-    protected void disposeSprites() {
+    void disposeSprites() {
     
-		for (int i = 0; i < activeSprites.size(); i++) {
-			ActiveSprite sprite = activeSprites.get(i);
-    		if (sprite.getDispose() == true) {
-    			disposalList.add(sprite);
+		for (ActiveSprite activeSprite : activeSprites) {
+    		if (activeSprite.getDispose()) {
+    			disposalList.add(activeSprite);
     		}
     	}
-		for (int i = 0; i < disposalList.size(); i++) {
-			ActiveSprite sprite = disposalList.get(i);
-			activeSprites.remove(sprite);
+		for (ActiveSprite activeSprite : disposalList) {
+			activeSprites.remove(activeSprite);
     	}
+
     	if (disposalList.size() > 0) {
     		disposalList.clear();
     	}

@@ -31,7 +31,7 @@ public class SpaceInvaders extends JFrame {
 	private double xCenter = 0;		
 	private double yCenter = 0;
 	
-	private JPanel panel = null;
+	private JPanel panel;
 	private JLabel lblScore;
 	private FadeLabel lblPressPToPlay;
 	private JLabel lblSpaceInvaders;
