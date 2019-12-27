@@ -64,10 +64,13 @@ public class AlienSprite extends ActiveSprite {
 			movementFirstFrame = ImageIO.read(firstFrameFile);
 			movementSecondFrame = ImageIO.read(secondFrameFile);
 			explosionFrames = new Image[] {
-					ImageIO.read(new File("res/explosion/explosion_0.png")),
-					ImageIO.read(new File("res/explosion/explosion_1.png")),
-					ImageIO.read(new File("res/explosion/explosion_2.png")),
-					ImageIO.read(new File("res/explosion/explosion_3.png"))
+					ImageIO.read(new File("res/alienExplosion/explosion_0.png")),
+					ImageIO.read(new File("res/alienExplosion/explosion_1.png")),
+					ImageIO.read(new File("res/alienExplosion/explosion_2.png")),
+					ImageIO.read(new File("res/alienExplosion/explosion_3.png")),
+					ImageIO.read(new File("res/alienExplosion/explosion_4.png")),
+					ImageIO.read(new File("res/alienExplosion/explosion_5.png")),
+					ImageIO.read(new File("res/alienExplosion/explosion_6.png"))
 				};
 		} catch (IOException e) {
 			System.err.println(e.toString());
@@ -79,7 +82,7 @@ public class AlienSprite extends ActiveSprite {
 		if (!isDead) {
 			return onFirstFrame ? movementSecondFrame : movementFirstFrame;
 		} else {
-			if (explosionFrame != 3) {
+			if (explosionFrame != 6) {
 				explosionFrame++;
 			}
 			return explosionFrames[explosionFrame];
