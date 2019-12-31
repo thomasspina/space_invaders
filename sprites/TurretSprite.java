@@ -5,12 +5,27 @@ import java.io.IOException;
 
 public class TurretSprite extends ActiveSprite {
 
+    private final static double SPEED = 200;
+    private final static int WIDTH = 32;
+    private final static int HEIGHT = 32;
+
+    private AudioPlayer laserSound = new AudioPlayer();
+    private AudioPlayer explosionSound = new AudioPlayer();
+
+    private boolean isOnRightEdge = false;
+    private boolean isOnLeftEdge = false;
     private boolean isDead = false;
     private Image turretImage;
-    private Image explosionFrames[];
+    private Image[] explosionFrames;
     private int explosionFrame = -1;
 
-    TurretSprite() {
+    TurretSprite(double centerX, double centerY) {
+        super();
+        setCenterX(centerX);
+        setCenterY(centerY);
+        setWidth(WIDTH);
+        setHeight(HEIGHT);
+
         try {
             turretImage = ImageIO.read(new File("res/turret/turret_0.png"));
             explosionFrames = new Image[] {
@@ -32,7 +47,7 @@ public class TurretSprite extends ActiveSprite {
         if (!isDead) {
             return turretImage;
         } else {
-            if (explosionFrame != 6) {
+            if (explosionFrame != 7) {
                 explosionFrame++;
             }
             return explosionFrames[explosionFrame];
@@ -41,6 +56,61 @@ public class TurretSprite extends ActiveSprite {
 
     @Override
     public void update(Screen level, KeyboardInput keyboard, long actual_delta_time) {
+        if (!isOnRightEdge && keyboard.keyDown(39)) {
+            isOnLeftEdge = false;
+            setCenterX(getCenterX() + (SPEED * actual_delta_time * 0.001));
+        } else if (!isOnLeftEdge && keyboard.keyDown(37)) {
+            isOnRightEdge = false;
+            setCenterX(getCenterX() + (-SPEED * actual_delta_time * 0.001));
+        }
 
+        if (explosionFrame == 6) {
+            setDispose();
+        }
+    }
+
+    private void collidedWithObject(Screen screen, double centerX, double centerY) {
+        for (ActiveSprite activeSprite : screen.getActiveSprites()) {
+            if (activeSprite instanceof ProjectileSprite) {
+                isDead = CollisionDetection.overlaps(
+                        getMinX(),
+                        getMaxY(),
+                        getMaxX(),
+                        getMinY(),
+                        activeSprite.getMinX() + activeSprite.getCenterX(),
+                        activeSprite.getMaxY() + activeSprite.getCenterY(),
+                        activeSprite.getMaxX() + activeSprite.getCenterX(),
+                        activeSprite.getMinY() + activeSprite.getCenterY());
+
+
+                if (isDead) {
+                    explosionSound.playAsynchronous("res/explosion_1.wav");
+                    activeSprite.setDispose();
+                    break;
+                }
+            }
+        }
+
+        for (StaticSprite staticSprite : screen.getStaticSprites()) {
+            if (staticSprite instanceof BarrierSprite) {
+                boolean onScreenEdge = CollisionDetection.overlaps(
+                        getMinX(),
+                        getMinY(),
+                        getMaxX(),
+                        getMaxY(),
+                        staticSprite.getMinX(),
+                        staticSprite.getMinY(),
+                        staticSprite.getMaxX(),
+                        staticSprite.getMaxY());
+
+                if (onScreenEdge) {
+                    if (getCenterX() > 0) {
+                        isOnRightEdge = true;
+                    } else {
+                        isOnLeftEdge = true;
+                    }
+                }
+            }
+        }
     }
 }

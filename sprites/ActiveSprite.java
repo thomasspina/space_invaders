@@ -16,8 +16,7 @@ public abstract class ActiveSprite extends Sprite {
 	public abstract void update(Screen level, KeyboardInput keyboard, long actual_delta_time);
 	public abstract Image getImage();
 	
-	ActiveSprite() {
-	}
+	ActiveSprite() { }
 	
 	public final double getMinX() {
 		return centerX - (width / 2);

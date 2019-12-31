@@ -82,7 +82,7 @@ public class AlienSprite extends ActiveSprite {
 		if (!isDead) {
 			return onFirstFrame ? movementSecondFrame : movementFirstFrame;
 		} else {
-			if (explosionFrame != 6) {
+			if (explosionFrame != 7) {
 				explosionFrame++;
 			}
 			return explosionFrames[explosionFrame];
@@ -116,7 +116,7 @@ public class AlienSprite extends ActiveSprite {
 				// create an alien projectile instance
 			}
 			
-		} else if (explosionFrame == 3) {
+		} else if (explosionFrame == 6) {
 			setDispose();
 		}
 	}

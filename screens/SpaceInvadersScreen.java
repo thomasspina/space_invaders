@@ -25,7 +25,8 @@ public class SpaceInvadersScreen extends Screen {
 			}
 		}
 		
-		
+		activeSprites.add(new TurretSprite(0, 257));
+
 		staticSprites.add(rightBarrier);
 		staticSprites.add(leftBarrier);
 	}
