@@ -16,22 +16,22 @@ public class ProjectileSprite extends ActiveSprite {
 	private AudioPlayer projectileSound = null;
 	
 	private double speed;
+	private ProjectileType type;
 	
-	ProjectileSprite(double centerX, double centerY, int projectileType) {
+	ProjectileSprite(double centerX, double centerY, ProjectileType projectileType) {
 		super();
 		this.setCenterX(centerX);
 		this.setCenterY(centerY);
 		this.setWidth(WIDTH);
 		this.setHeight(HEIGHT);
+		type = projectileType;
 
-
-
-		if (projectileType == 0) {
+		if (projectileType == ProjectileType.TURRET) {
 			speed = -6;
 			soundFilePath = "res/turretProjectile.wav";
 			imageFilePath = "res/turretProjectile/turretProjectile_0.png";
 		} else {
-			speed = 0.4;
+			speed = 2;
 			soundFilePath = "res/alienProjectile.wav";
 			imageFilePath = "res/alienProjectile/alienProjectile_0.png";
 		}
@@ -70,5 +70,7 @@ public class ProjectileSprite extends ActiveSprite {
 	private boolean isOutOfBounds() {
 		return getCenterY() < -300 || getCenterY() > 300;
 	}
+
+	ProjectileType getType() { return type; }
 }
 

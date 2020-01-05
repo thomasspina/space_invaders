@@ -9,11 +9,10 @@ public class AlienSprite extends ActiveSprite {
 	private static final int WIDTH = 32;
 	private static final int X_SHIFT_DISTANCE = 10;
 	private static final int Y_SHIFT_DISTANCE = 15;
-	private static final double SHOOTING_PROBABILITY = 0.2;
+	private static final double SHOOTING_PROBABILITY = 0.005;
 	
 	private static Image[] explosionFrames;
-	
-	private AudioPlayer laserSound = new AudioPlayer();
+
 	private AudioPlayer explosionSound = new AudioPlayer();
 	
 	final private int pointValue;
@@ -29,8 +28,6 @@ public class AlienSprite extends ActiveSprite {
 	private boolean shiftingY = false;
 	private boolean justShiftedY = false;
 	private boolean isShooting = false;
-	
-	// need to add random shooting
 	
 	private long previousTime = 0;
 	private int shiftPeriod = 300;
@@ -113,7 +110,8 @@ public class AlienSprite extends ActiveSprite {
 			}
 			
 			if (isShooting) {
-				// create an alien projectile instance
+				((SpaceInvadersScreen) screen).shoot(getCenterX(), getCenterY(), ProjectileType.ALIEN);
+				isShooting = false;
 			}
 			
 		} else if (explosionFrame == 6) {
@@ -122,39 +120,39 @@ public class AlienSprite extends ActiveSprite {
 	}
 	
 	private void collidedWithObject(Screen screen) {
-		for (ActiveSprite activeSprite : screen.getActiveSprites()) {
-			if (activeSprite instanceof ProjectileSprite) {
+		for (ActiveSprite sprite : screen.getActiveSprites()) {
+			if (sprite instanceof ProjectileSprite && ((ProjectileSprite) sprite).getType() == ProjectileType.TURRET) {
 				isDead = CollisionDetection.overlaps(
 						getMinX(),
 						getMinY(),
 						getMaxX(), 
 						getMaxY(),
-						activeSprite.getMinX(),
-						activeSprite.getMinY(),
-						activeSprite.getMaxX(),
-						activeSprite.getMaxY());
+						sprite.getMinX(),
+						sprite.getMinY(),
+						sprite.getMaxX(),
+						sprite.getMaxY());
 
 
 				if (isDead) {
-					// add the point value to the screen.score once it is created
+					((SpaceInvadersScreen) screen).addScore(pointValue);
 					explosionSound.playAsynchronous("res/explosion_0.wav");
-					activeSprite.setDispose();
+					sprite.setDispose();
 					break;
 				}
 			}
 		}
 		
-		for (StaticSprite staticSprite : screen.getStaticSprites()) {
-			if (staticSprite instanceof BarrierSprite) {
+		for (StaticSprite sprite : screen.getStaticSprites()) {
+			if (sprite instanceof BarrierSprite) {
 				boolean onScreenEdge = CollisionDetection.overlaps(
 						getMinX(),
 						getMinY(), 
 						getMaxX(), 
-						getMaxY(), 
-						staticSprite.getMinX(), 
-						staticSprite.getMinY(),
-						staticSprite.getMaxX(),
-						staticSprite.getMaxY());
+						getMaxY(),
+						sprite.getMinX(),
+						sprite.getMinY(),
+						sprite.getMaxX(),
+						sprite.getMaxY());
 				
 				if (!justShiftedY && !shiftingY && onScreenEdge) {
 					for (ActiveSprite activeSprite : screen.getActiveSprites()) {

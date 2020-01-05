@@ -8,7 +8,6 @@ public class TurretSprite extends ActiveSprite {
     private final static double SPEED = 200;
     private final static int WIDTH = 32;
     private final static int HEIGHT = 32;
-    private final static int SHOOTING_COOLDOWN = 500;
 
     private AudioPlayer explosionSound = new AudioPlayer();
 
@@ -18,7 +17,6 @@ public class TurretSprite extends ActiveSprite {
     private Image turretImage;
     private Image[] explosionFrames;
     private int explosionFrame = -1;
-    private long lastShotTime;
 
     TurretSprite(double centerX, double centerY) {
         super();
@@ -59,10 +57,16 @@ public class TurretSprite extends ActiveSprite {
     public void update(Screen screen, KeyboardInput keyboard, long actual_delta_time) {
         collidedWithObject(screen);
 
-        lastShotTime += actual_delta_time;
-        if (lastShotTime >= SHOOTING_COOLDOWN && !isDead && keyboard.keyDownOnce(32)) {
-            ((SpaceInvadersScreen) screen).shoot(getCenterX(), getCenterY(), 0);
-            lastShotTime = 0;
+        boolean canShoot = true;
+        for (ActiveSprite sprite : screen.getActiveSprites()) {
+            if (sprite instanceof ProjectileSprite && ((ProjectileSprite) sprite).getType() == ProjectileType.TURRET) {
+                canShoot = false;
+                break;
+            }
+        }
+
+        if (canShoot && !isDead && keyboard.keyDownOnce(32)) {
+            ((SpaceInvadersScreen) screen).shoot(getCenterX(), getCenterY(), ProjectileType.TURRET);
         }
 
         if (!isOnRightEdge && keyboard.keyDown(39)) {
@@ -79,38 +83,38 @@ public class TurretSprite extends ActiveSprite {
     }
 
     private void collidedWithObject(Screen screen) {
-        for (ActiveSprite activeSprite : screen.getActiveSprites()) {
-            if (activeSprite instanceof ProjectileSprite) {
+        for (ActiveSprite sprite : screen.getActiveSprites()) {
+            if (sprite instanceof ProjectileSprite && ((ProjectileSprite) sprite).getType() == ProjectileType.ALIEN) {
                 isDead = CollisionDetection.overlaps(
                         getMinX(),
-                        getMaxY(),
-                        getMaxX(),
                         getMinY(),
-                        activeSprite.getMinX() + activeSprite.getCenterX(),
-                        activeSprite.getMaxY() + activeSprite.getCenterY(),
-                        activeSprite.getMaxX() + activeSprite.getCenterX(),
-                        activeSprite.getMinY() + activeSprite.getCenterY());
+                        getMaxX(),
+                        getMaxY(),
+                        sprite.getMinX(),
+                        sprite.getMinY(),
+                        sprite.getMaxX(),
+                        sprite.getMaxY());
 
 
                 if (isDead) {
                     explosionSound.playAsynchronous("res/explosion_1.wav");
-                    activeSprite.setDispose();
+                    sprite.setDispose();
                     break;
                 }
             }
         }
 
-        for (StaticSprite staticSprite : screen.getStaticSprites()) {
-            if (staticSprite instanceof BarrierSprite) {
+        for (StaticSprite sprite : screen.getStaticSprites()) {
+            if (sprite instanceof BarrierSprite) {
                 boolean onScreenEdge = CollisionDetection.overlaps(
                         getMinX(),
                         getMinY(),
                         getMaxX(),
                         getMaxY(),
-                        staticSprite.getMinX(),
-                        staticSprite.getMinY(),
-                        staticSprite.getMaxX(),
-                        staticSprite.getMaxY());
+                        sprite.getMinX(),
+                        sprite.getMinY(),
+                        sprite.getMaxX(),
+                        sprite.getMaxY());
 
                 if (onScreenEdge) {
                     if (getCenterX() > 0) {
