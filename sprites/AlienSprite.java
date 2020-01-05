@@ -82,7 +82,7 @@ public class AlienSprite extends ActiveSprite {
 		if (!isDead) {
 			return onFirstFrame ? movementSecondFrame : movementFirstFrame;
 		} else {
-			if (explosionFrame != 7) {
+			if (explosionFrame != 6) {
 				explosionFrame++;
 			}
 			return explosionFrames[explosionFrame];
@@ -93,7 +93,7 @@ public class AlienSprite extends ActiveSprite {
 	public void update(Screen screen, KeyboardInput keyboard, long actual_delta_time) {
 		previousTime += actual_delta_time;
 		
-		collidedWithObject(screen, getCenterX(), getCenterY());
+		collidedWithObject(screen);
 		
 		if (!isDead && previousTime >= shiftPeriod) {
 			isShooting = Math.random() < SHOOTING_PROBABILITY;
@@ -121,20 +121,20 @@ public class AlienSprite extends ActiveSprite {
 		}
 	}
 	
-	private void collidedWithObject(Screen screen, double centerX, double centerY) {
+	private void collidedWithObject(Screen screen) {
 		for (ActiveSprite activeSprite : screen.getActiveSprites()) {
 			if (activeSprite instanceof ProjectileSprite) {
 				isDead = CollisionDetection.overlaps(
 						getMinX(),
-						getMaxY(), 
+						getMinY(),
 						getMaxX(), 
-						getMinY(), 
-						activeSprite.getMinX() + activeSprite.getCenterX(), 
-						activeSprite.getMaxY() + activeSprite.getCenterY(),
-						activeSprite.getMaxX() + activeSprite.getCenterX(),
-						activeSprite.getMinY() + activeSprite.getCenterY());
-				
-				
+						getMaxY(),
+						activeSprite.getMinX(),
+						activeSprite.getMinY(),
+						activeSprite.getMaxX(),
+						activeSprite.getMaxY());
+
+
 				if (isDead) {
 					// add the point value to the screen.score once it is created
 					explosionSound.playAsynchronous("res/explosion_0.wav");

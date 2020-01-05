@@ -1,7 +1,10 @@
+import java.util.ArrayList;
+
 public class SpaceInvadersScreen extends Screen {
 
 	private boolean isPaused = false;
-	
+	private ArrayList<ProjectileSprite> projectileSprites = new ArrayList<>();
+
 	SpaceInvadersScreen() {
 		super();
 		setXCenter(0);
@@ -30,7 +33,11 @@ public class SpaceInvadersScreen extends Screen {
 		staticSprites.add(rightBarrier);
 		staticSprites.add(leftBarrier);
 	}
-	
+
+	void shoot(double centerX, double centerY, int type) {
+		projectileSprites.add(new ProjectileSprite(centerX, centerY, type));
+	}
+
 	@Override
 	public boolean centerOnPlayer() {
 		return false;
@@ -41,11 +48,15 @@ public class SpaceInvadersScreen extends Screen {
 		if (keyboard.keyDownOnce(80)) {
 			isPaused ^= true;
 		}
-		
+
 		if (!isPaused) {
+			for (ProjectileSprite sprite : projectileSprites) {
+				getActiveSprites().add(sprite);
+			}
+			projectileSprites.clear();
+
 			updateSprites(keyboard, actual_delta_time);
 			disposeSprites();
 		}
-		
 	}
 }

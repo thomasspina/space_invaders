@@ -7,26 +7,38 @@ import javax.imageio.ImageIO;
 public class ProjectileSprite extends ActiveSprite {
 
 	private static Image image;
-	private static final int WIDTH = 20;
-	private static final int HEIGHT = 20;
+	private static final int WIDTH = 3;
+	private static final int HEIGHT = 10;
+
+	private String imageFilePath;
+	private String soundFilePath;
 
 	private AudioPlayer projectileSound = null;
 	
-	private double velocityY;
+	private double speed;
 	
-	ProjectileSprite(double centerX, double centerY, double velocityY, String audioFile) {
-
+	ProjectileSprite(double centerX, double centerY, int projectileType) {
 		super();
 		this.setCenterX(centerX);
 		this.setCenterY(centerY);
 		this.setWidth(WIDTH);
 		this.setHeight(HEIGHT);
 
-		this.velocityY = velocityY;
+
+
+		if (projectileType == 0) {
+			speed = -6;
+			soundFilePath = "res/turretProjectile.wav";
+			imageFilePath = "res/turretProjectile/turretProjectile_0.png";
+		} else {
+			speed = 0.4;
+			soundFilePath = "res/alienProjectile.wav";
+			imageFilePath = "res/alienProjectile/alienProjectile_0.png";
+		}
 		
 		if (image == null) {
 			try {
-				image = ImageIO.read(new File("res/turretProjectile/turretProjectile_0.png"));
+				image = ImageIO.read(new File(imageFilePath));
 			}
 			catch (IOException e) {
 				System.err.println(e.toString());
@@ -37,7 +49,7 @@ public class ProjectileSprite extends ActiveSprite {
 			projectileSound = new AudioPlayer();
 		}
 		
-		projectileSound.playAsynchronous(audioFile);
+		projectileSound.playAsynchronous(soundFilePath);
 	}
 	
 	@Override
@@ -46,11 +58,17 @@ public class ProjectileSprite extends ActiveSprite {
 	}
 		
 	@Override
-	public void update(Screen level, KeyboardInput keyboard, long actual_delta_time) {
-	    double movement_y = (velocityY * actual_delta_time * 0.001);
-	    
-	    this.addCenterY(movement_y);    			
-	}			
-	
+	public void update(Screen screen, KeyboardInput keyboard, long actual_delta_time) {
+
+	    setCenterY(getCenterY() + speed);
+
+	    if (isOutOfBounds()) {
+	    	setDispose();
+		}
+	}
+
+	private boolean isOutOfBounds() {
+		return getCenterY() < -300 || getCenterY() > 300;
+	}
 }
 

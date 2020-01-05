@@ -8,8 +8,8 @@ public class TurretSprite extends ActiveSprite {
     private final static double SPEED = 200;
     private final static int WIDTH = 32;
     private final static int HEIGHT = 32;
+    private final static int SHOOTING_COOLDOWN = 500;
 
-    private AudioPlayer laserSound = new AudioPlayer();
     private AudioPlayer explosionSound = new AudioPlayer();
 
     private boolean isOnRightEdge = false;
@@ -18,6 +18,7 @@ public class TurretSprite extends ActiveSprite {
     private Image turretImage;
     private Image[] explosionFrames;
     private int explosionFrame = -1;
+    private long lastShotTime;
 
     TurretSprite(double centerX, double centerY) {
         super();
@@ -47,7 +48,7 @@ public class TurretSprite extends ActiveSprite {
         if (!isDead) {
             return turretImage;
         } else {
-            if (explosionFrame != 7) {
+            if (explosionFrame != 6) {
                 explosionFrame++;
             }
             return explosionFrames[explosionFrame];
@@ -55,7 +56,15 @@ public class TurretSprite extends ActiveSprite {
     }
 
     @Override
-    public void update(Screen level, KeyboardInput keyboard, long actual_delta_time) {
+    public void update(Screen screen, KeyboardInput keyboard, long actual_delta_time) {
+        collidedWithObject(screen);
+
+        lastShotTime += actual_delta_time;
+        if (lastShotTime >= SHOOTING_COOLDOWN && !isDead && keyboard.keyDownOnce(32)) {
+            ((SpaceInvadersScreen) screen).shoot(getCenterX(), getCenterY(), 0);
+            lastShotTime = 0;
+        }
+
         if (!isOnRightEdge && keyboard.keyDown(39)) {
             isOnLeftEdge = false;
             setCenterX(getCenterX() + (SPEED * actual_delta_time * 0.001));
@@ -69,7 +78,7 @@ public class TurretSprite extends ActiveSprite {
         }
     }
 
-    private void collidedWithObject(Screen screen, double centerX, double centerY) {
+    private void collidedWithObject(Screen screen) {
         for (ActiveSprite activeSprite : screen.getActiveSprites()) {
             if (activeSprite instanceof ProjectileSprite) {
                 isDead = CollisionDetection.overlaps(
