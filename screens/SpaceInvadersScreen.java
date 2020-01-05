@@ -4,11 +4,10 @@ public class SpaceInvadersScreen extends Screen {
 
 	private boolean isPaused = false;
 	private ArrayList<ProjectileSprite> projectileSprites = new ArrayList<>();
+	private int score;
 
 	SpaceInvadersScreen() {
 		super();
-		setXCenter(0);
-		setYCenter(0);
 		
 		BarrierSprite rightBarrier = new BarrierSprite(345, -250, 335, 270);
 		BarrierSprite leftBarrier = new BarrierSprite(-363, -250, -353, 270);
@@ -34,13 +33,8 @@ public class SpaceInvadersScreen extends Screen {
 		staticSprites.add(leftBarrier);
 	}
 
-	void shoot(double centerX, double centerY, int type) {
+	void shoot(double centerX, double centerY, ProjectileType type) {
 		projectileSprites.add(new ProjectileSprite(centerX, centerY, type));
-	}
-
-	@Override
-	public boolean centerOnPlayer() {
-		return false;
 	}
 
 	@Override
@@ -58,5 +52,13 @@ public class SpaceInvadersScreen extends Screen {
 			updateSprites(keyboard, actual_delta_time);
 			disposeSprites();
 		}
+	}
+
+	public void addScore(int score) {
+		this.score += score;
+	}
+
+	public int getScore() {
+		return score;
 	}
 }

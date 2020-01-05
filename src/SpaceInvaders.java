@@ -149,16 +149,13 @@ public class SpaceInvaders extends JFrame {
 		SpaceInvaders spaceInvaders = new SpaceInvaders();
 		spaceInvaders.setVisible(true);
 		
-		game = new Thread() {
-			public void run() {
-				spaceInvaders.animationLoop();
-			}
-		};
+		game = new Thread(() -> spaceInvaders.animationLoop());
 		
 		game.start();
 	}
 	
-	public void animationLoop() {
+	private void animationLoop() {
+
 		while(true) {
 			last_refresh_time = System.currentTimeMillis();
 			next_refresh_time = current_time + minimum_delta_time;
@@ -169,7 +166,8 @@ public class SpaceInvaders extends JFrame {
 				try {
 					Thread.sleep(1);
 				}
-				catch(Exception e) {    					
+				catch(Exception e) {
+					System.err.println(e.toString());
 				} 
 
 				current_time = System.currentTimeMillis();
@@ -180,6 +178,10 @@ public class SpaceInvaders extends JFrame {
 			updateTime();
 			if (playing) {
 				screen.update(keyboard, actual_delta_time);
+				int score = ((SpaceInvadersScreen) screen).getScore();
+				if (Integer.parseInt(lblScore.getText()) != score) {
+					lblScore.setText(String.valueOf(score));
+				}
 			}
 			repaint();
 		}
