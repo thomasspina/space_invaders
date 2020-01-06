@@ -55,27 +55,30 @@ public class TurretSprite extends ActiveSprite {
 
     @Override
     public void update(Screen screen, KeyboardInput keyboard, long actual_delta_time) {
-        collidedWithObject(screen);
-
-        boolean canShoot = true;
-        for (ActiveSprite sprite : screen.getActiveSprites()) {
-            if (sprite instanceof ProjectileSprite && ((ProjectileSprite) sprite).getType() == ProjectileType.TURRET) {
-                canShoot = false;
-                break;
+    	if (!isDead) {
+    		collidedWithObject(screen);
+    		
+    		boolean canShoot = true;
+            for (ActiveSprite sprite : screen.getActiveSprites()) {
+                if (sprite instanceof ProjectileSprite && ((ProjectileSprite) sprite).getType() == ProjectileType.TURRET) {
+                    canShoot = false;
+                    break;
+                }
             }
-        }
 
-        if (canShoot && !isDead && keyboard.keyDownOnce(32)) {
-            ((SpaceInvadersScreen) screen).shoot(getCenterX(), getCenterY(), ProjectileType.TURRET);
-        }
+            if (canShoot && keyboard.keyDownOnce(32)) {
+                ((SpaceInvadersScreen) screen).shoot(getCenterX(), getCenterY(), ProjectileType.TURRET);
+            }
 
-        if (!isOnRightEdge && keyboard.keyDown(39)) {
-            isOnLeftEdge = false;
-            setCenterX(getCenterX() + (SPEED * actual_delta_time * 0.001));
-        } else if (!isOnLeftEdge && keyboard.keyDown(37)) {
-            isOnRightEdge = false;
-            setCenterX(getCenterX() + (-SPEED * actual_delta_time * 0.001));
-        }
+            if (!isOnRightEdge && keyboard.keyDown(39)) {
+                isOnLeftEdge = false;
+                setCenterX(getCenterX() + (SPEED * actual_delta_time * 0.001));
+            } else if (!isOnLeftEdge && keyboard.keyDown(37)) {
+                isOnRightEdge = false;
+                setCenterX(getCenterX() + (-SPEED * actual_delta_time * 0.001));
+            }
+    	}
+        
 
         if (explosionFrame == 6) {
             setDispose();
@@ -126,4 +129,9 @@ public class TurretSprite extends ActiveSprite {
             }
         }
     }
+    
+    public
+    boolean isDead() {
+		return isDead;
+	}
 }
