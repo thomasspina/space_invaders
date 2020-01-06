@@ -90,33 +90,38 @@ public class AlienSprite extends ActiveSprite {
 	public void update(Screen screen, KeyboardInput keyboard, long actual_delta_time) {
 		previousTime += actual_delta_time;
 		
-		collidedWithObject(screen);
-		
-		if (!isDead && previousTime >= shiftPeriod) {
-			isShooting = Math.random() < SHOOTING_PROBABILITY;
-			onFirstFrame ^= true;
-			previousTime -= shiftPeriod;
-			
-			if (shiftingY) {
-				shiftingY = false;
-				justShiftedY = true;
-				setCenterY(getCenterY() + Y_SHIFT_DISTANCE); 
-			} else {
-				if (justShiftedY) {
-					direction *= -1;
-					justShiftedY = false;
+		if (!isDead) {
+			collidedWithObject(screen);
+
+			if (previousTime >= shiftPeriod) {
+				isShooting = Math.random() < SHOOTING_PROBABILITY;
+				onFirstFrame ^= true;
+				previousTime -= shiftPeriod;
+				
+				if (shiftingY) {
+					shiftingY = false;
+					justShiftedY = true;
+					setCenterY(getCenterY() + Y_SHIFT_DISTANCE); 
+				} else {
+					if (justShiftedY) {
+						direction *= -1;
+						justShiftedY = false;
+					}
+					setCenterX(getCenterX() + (X_SHIFT_DISTANCE * direction));
 				}
-				setCenterX(getCenterX() + (X_SHIFT_DISTANCE * direction));
-			}
-			
-			if (isShooting) {
-				((SpaceInvadersScreen) screen).shoot(getCenterX(), getCenterY(), ProjectileType.ALIEN);
-				isShooting = false;
-			}
-			
-		} else if (explosionFrame == 6) {
+				
+				if (isShooting) {
+					((SpaceInvadersScreen) screen).shoot(getCenterX(), getCenterY(), ProjectileType.ALIEN);
+					isShooting = false;
+				}
+				
+			} 
+		}
+		
+		if (explosionFrame == 6) {
 			setDispose();
 		}
+		
 	}
 	
 	private void collidedWithObject(Screen screen) {
