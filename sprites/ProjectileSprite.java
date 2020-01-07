@@ -6,7 +6,6 @@ import javax.imageio.ImageIO;
 
 public class ProjectileSprite extends ActiveSprite {
 
-	private static Image image;
 	private static final int WIDTH = 3;
 	private static final int HEIGHT = 10;
 
@@ -14,6 +13,7 @@ public class ProjectileSprite extends ActiveSprite {
 	private String soundFilePath;
 
 	private AudioPlayer projectileSound = null;
+	private Image image;
 	
 	private double speed;
 	private ProjectileType type;
@@ -36,13 +36,11 @@ public class ProjectileSprite extends ActiveSprite {
 			imageFilePath = "res/alienProjectile/alienProjectile_0.png";
 		}
 		
-		if (image == null) {
-			try {
-				image = ImageIO.read(new File(imageFilePath));
-			}
-			catch (IOException e) {
-				System.err.println(e.toString());
-			}
+		try {
+			image = ImageIO.read(new File(imageFilePath));
+		}
+		catch (IOException e) {
+			System.err.println(e.toString());
 		}
 		
 		if (projectileSound == null) {
