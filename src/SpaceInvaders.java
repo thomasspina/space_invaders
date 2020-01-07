@@ -33,8 +33,9 @@ public class SpaceInvaders extends JFrame {
 	
 	private JPanel panel;
 	private JLabel lblScore;
-	private FadeLabel lblPressPToPlay;
-	private JLabel lblSpaceInvaders;
+	private FadeLabel lblFadeLabel;
+	private JLabel lblMiddleLabel;
+	private JLabel lblScoreText;
 	Timer fadeTimer;
 	private static Thread game;
 	
@@ -48,6 +49,7 @@ public class SpaceInvaders extends JFrame {
 	private String score;
 	
 	private boolean playing = false;
+	private boolean isGameOver = false;
 	
 	private ArrayList<ActiveSprite> activeSprites = null;
 	private ArrayList<StaticSprite> staticSprites = null;
@@ -97,19 +99,19 @@ public class SpaceInvaders extends JFrame {
 		panel.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 		getContentPane().add(panel, BorderLayout.CENTER);
 		
-		lblSpaceInvaders = new JLabel("Space Invaders", SwingConstants.CENTER);
-		lblSpaceInvaders.setFont(new Font("Lucida Console", Font.BOLD, 70));
-		lblSpaceInvaders.setForeground(Color.WHITE);
-		lblSpaceInvaders.setBounds(10, 200, 714, 84);
-		getContentPane().add(lblSpaceInvaders);
-		getContentPane().setComponentZOrder(lblSpaceInvaders, 0);
+		lblMiddleLabel = new JLabel("Space Invaders", SwingConstants.CENTER);
+		lblMiddleLabel.setFont(new Font("Lucida Console", Font.BOLD, 70));
+		lblMiddleLabel.setForeground(Color.WHITE);
+		lblMiddleLabel.setBounds(10, 200, 714, 84);
+		getContentPane().add(lblMiddleLabel);
+		getContentPane().setComponentZOrder(lblMiddleLabel, 0);
 		
-		JLabel lblHighScore = new JLabel("High Score:");
-		lblHighScore.setFont(new Font("Lucida Console", Font.PLAIN, 16));
-		lblHighScore.setForeground(Color.WHITE);
-		lblHighScore.setBounds(10, 11, 149, 30);
-		getContentPane().add(lblHighScore);
-		getContentPane().setComponentZOrder(lblHighScore, 0);
+		lblScoreText = new JLabel("High Score:");
+		lblScoreText.setFont(new Font("Lucida Console", Font.PLAIN, 16));
+		lblScoreText.setForeground(Color.WHITE);
+		lblScoreText.setBounds(10, 11, 149, 30);
+		getContentPane().add(lblScoreText);
+		getContentPane().setComponentZOrder(lblScoreText, 0);
 		
 		lblScore = new JLabel(score, SwingConstants.RIGHT);
 		lblScore.setForeground(Color.WHITE);
@@ -118,17 +120,17 @@ public class SpaceInvaders extends JFrame {
 		getContentPane().add(lblScore);
 		getContentPane().setComponentZOrder(lblScore, 0);
 		
-		lblPressPToPlay = new FadeLabel("press SPACE to play", SwingConstants.CENTER);
-		lblPressPToPlay.setFont(new Font("Lucida Console", Font.PLAIN, 29));
-		lblPressPToPlay.setForeground(Color.WHITE);
-		lblPressPToPlay.setBounds(10, 308, 714, 46);
-		getContentPane().add(lblPressPToPlay);
-		getContentPane().setComponentZOrder(lblPressPToPlay, 0);
+		lblFadeLabel = new FadeLabel("press SPACE to play", SwingConstants.CENTER);
+		lblFadeLabel.setFont(new Font("Lucida Console", Font.PLAIN, 29));
+		lblFadeLabel.setForeground(Color.WHITE);
+		lblFadeLabel.setBounds(10, 308, 714, 46);
+		getContentPane().add(lblFadeLabel);
+		getContentPane().setComponentZOrder(lblFadeLabel, 0);
 		
 		fadeTimer = new Timer(100, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                float alpha = lblPressPToPlay.getAlpha();
+                float alpha = lblFadeLabel.getAlpha();
                 alpha += fadeDirection;
                 if (alpha < 0) {
                     alpha = 0;
@@ -137,9 +139,10 @@ public class SpaceInvaders extends JFrame {
                     alpha = 1;
                     fadeDirection = -0.07f;
                 }
-                lblPressPToPlay.setAlpha(alpha);
+                lblFadeLabel.setAlpha(alpha);
             }
         });
+		
 		fadeTimer.setRepeats(true);
 		fadeTimer.setCoalesce(true);
 		fadeTimer.start();
@@ -177,10 +180,30 @@ public class SpaceInvaders extends JFrame {
 			handleKeyboardInput();
 			updateTime();
 			if (playing) {
-				screen.update(keyboard, actual_delta_time);
 				int score = ((SpaceInvadersScreen) screen).getScore();
-				if (Integer.parseInt(lblScore.getText()) != score) {
-					lblScore.setText(String.valueOf(score));
+				if (((SpaceInvadersScreen) screen).isGameOver()) {
+					lblFadeLabel.setText("press SPACE to return to the main menu");
+					lblFadeLabel.setVisible(true);
+					fadeTimer.start();
+					lblMiddleLabel.setText("Game Over");
+					lblMiddleLabel.setVisible(true);
+					playing = false;
+					
+					if (score > Integer.parseInt(this.score)) {
+						try {
+							serializer.serialize(String.valueOf(score), HIGH_SCORE_FILE);
+						} catch (Exception e) {
+							System.err.println(e.toString());
+						}
+					}
+					
+					isGameOver = true;
+				} else {
+					screen.update(keyboard, actual_delta_time);
+					
+					if (Integer.parseInt(lblScore.getText()) != score) {
+						lblScore.setText(String.valueOf(score));
+					}
 				}
 			}
 			repaint();
@@ -190,14 +213,32 @@ public class SpaceInvaders extends JFrame {
 	private void handleKeyboardInput() {
 		if (keyboard.keyDownOnce(32)) {
 			if (!playing) {
-				screen = new SpaceInvadersScreen();
-				staticSprites = screen.getStaticSprites();
-				activeSprites = screen.getActiveSprites();
-				lblPressPToPlay.setVisible(false);
-				lblSpaceInvaders.setVisible(false);
-				fadeTimer.stop();
-				lblScore.setText("0");
-				playing = true;
+				if (!isGameOver) {
+					screen = new SpaceInvadersScreen();
+					staticSprites = screen.getStaticSprites();
+					activeSprites = screen.getActiveSprites();
+					lblFadeLabel.setVisible(false);
+					lblMiddleLabel.setVisible(false);
+					lblScoreText.setText("Score:");
+					fadeTimer.stop();
+					lblScore.setText("0");
+					playing = true;
+				} else {
+					try {
+						score = (String) serializer.deserialize(HIGH_SCORE_FILE);
+					} catch (Exception e) {
+						score = "0";
+					}
+					
+					lblFadeLabel.setText("press SPACE to play");
+					lblMiddleLabel.setText("Space Invaders");
+					screen = null;
+					staticSprites = null;
+					activeSprites = null;
+					lblScoreText.setText("High Score:");
+					lblScore.setText(score);
+					isGameOver = false;
+				}
 			}
 		}
 	}
