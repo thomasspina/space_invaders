@@ -3,9 +3,12 @@ import java.util.ArrayList;
 public class SpaceInvadersScreen extends Screen {
 
 	private boolean isPaused = false;
+	private boolean isGameOver = false;
 	private ArrayList<ProjectileSprite> projectileSprites = new ArrayList<>();
-	private int score;
-
+	private int score = 0;
+	private int livesLeft = 3;
+	private TurretSprite player;
+	
 	SpaceInvadersScreen() {
 		super();
 		
@@ -27,7 +30,8 @@ public class SpaceInvadersScreen extends Screen {
 			}
 		}
 		
-		activeSprites.add(new TurretSprite(0, 257));
+		player = new TurretSprite(0, 257);
+		activeSprites.add(player);
 
 		staticSprites.add(rightBarrier);
 		staticSprites.add(leftBarrier);
@@ -43,7 +47,12 @@ public class SpaceInvadersScreen extends Screen {
 			isPaused ^= true;
 		}
 
-		if (!isPaused) {
+		if (!isPaused && !isGameOver) {
+			if (player.isDead()) {
+				livesLeft -= 1;
+				// remove one counter from the lives
+			}
+			
 			for (ProjectileSprite sprite : projectileSprites) {
 				getActiveSprites().add(sprite);
 			}
@@ -51,6 +60,10 @@ public class SpaceInvadersScreen extends Screen {
 
 			updateSprites(keyboard, actual_delta_time);
 			disposeSprites();
+		}
+		
+		if (livesLeft < 1) {
+			isGameOver = true;
 		}
 	}
 
@@ -60,5 +73,9 @@ public class SpaceInvadersScreen extends Screen {
 
 	public int getScore() {
 		return score;
+	}
+	
+	public boolean isGameOver() {
+		return isGameOver;
 	}
 }
