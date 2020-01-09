@@ -8,15 +8,23 @@ public class TurretSprite extends ActiveSprite {
     private final static double SPEED = 200;
     private final static int WIDTH = 32;
     private final static int HEIGHT = 32;
-
+    private final static int RESPAWN_SHOOT_DELAY = 500;
+    private final static int BLINK_FREQUENCY = 200;
+    
     private AudioPlayer explosionSound = new AudioPlayer();
 
+    private boolean isSpawning = true;
     private boolean isOnRightEdge = false;
     private boolean isOnLeftEdge = false;
     private boolean isDead = false;
     private Image turretImage;
+    private Image blinkTurretImage;
     private Image[] explosionFrames;
     private int explosionFrame = -1;
+    private int spawnBlinkCount = 0;
+    private long previousBlink = 0;
+    private long currentTime = 0;
+    private boolean onFirstRespawnFrame = true;
 
     TurretSprite(double centerX, double centerY) {
         super();
@@ -26,6 +34,7 @@ public class TurretSprite extends ActiveSprite {
         setHeight(HEIGHT);
 
         try {
+        	blinkTurretImage = ImageIO.read(new File("res/turret/turretSpawn_0.png"));
             turretImage = ImageIO.read(new File("res/turret/turret_0.png"));
             explosionFrames = new Image[] {
                     ImageIO.read(new File("res/turretExplosion/explosion_0.png")),
@@ -43,18 +52,35 @@ public class TurretSprite extends ActiveSprite {
 
     @Override
     public Image getImage() {
-        if (!isDead) {
-            return turretImage;
-        } else {
-            if (explosionFrame != 6) {
-                explosionFrame++;
+    	if (isSpawning) {
+    		if (spawnBlinkCount > 14) {
+    			isSpawning = false;
+    		}
+    		
+    		if (currentTime - BLINK_FREQUENCY > previousBlink) {
+    			spawnBlinkCount++;
+    			previousBlink = currentTime;
+    			onFirstRespawnFrame ^= true;
+    		}
+    		
+    		return onFirstRespawnFrame ? blinkTurretImage : turretImage;
+    		
+    	} else {
+    		if (!isDead) {
+                return turretImage;
+            } else {
+                if (explosionFrame != 6) {
+                    explosionFrame++;
+                }
+                return explosionFrames[explosionFrame];
             }
-            return explosionFrames[explosionFrame];
-        }
+    	}
     }
 
     @Override
     public void update(Screen screen, KeyboardInput keyboard, long actual_delta_time) {
+    	currentTime += actual_delta_time;
+    	
     	if (!isDead) {
     		collidedWithObject(screen);
     		
@@ -66,7 +92,7 @@ public class TurretSprite extends ActiveSprite {
                 }
             }
 
-            if (canShoot && keyboard.keyDownOnce(32)) {
+            if (canShoot && keyboard.keyDownOnce(32) && currentTime >= RESPAWN_SHOOT_DELAY) {
                 ((SpaceInvadersScreen) screen).shoot(getCenterX(), getCenterY(), ProjectileType.TURRET);
             }
 
@@ -88,7 +114,7 @@ public class TurretSprite extends ActiveSprite {
     private void collidedWithObject(Screen screen) {
         for (ActiveSprite sprite : screen.getActiveSprites()) {
             if (sprite instanceof ProjectileSprite && ((ProjectileSprite) sprite).getType() == ProjectileType.ALIEN) {
-                isDead = CollisionDetection.overlaps(
+            	isDead = CollisionDetection.overlaps(
                         getMinX(),
                         getMinY(),
                         getMaxX(),
@@ -98,7 +124,11 @@ public class TurretSprite extends ActiveSprite {
                         sprite.getMaxX(),
                         sprite.getMaxY());
 
-
+            	if (isDead && isSpawning) {
+            		sprite.setDispose();
+            		isDead = false;
+            	}
+            	
                 if (isDead) {
                     explosionSound.playAsynchronous("res/explosion_1.wav");
                     sprite.setDispose();
@@ -130,8 +160,7 @@ public class TurretSprite extends ActiveSprite {
         }
     }
     
-    public
-    boolean isDead() {
+    public boolean isDead() {
 		return isDead;
 	}
 }
