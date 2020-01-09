@@ -1,9 +1,11 @@
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class SpaceInvadersScreen extends Screen {
 
 	private boolean isPaused = false;
 	private boolean isGameOver = false;
+	private boolean isDeathAnimation = false;
 	private ArrayList<ProjectileSprite> projectileSprites = new ArrayList<>();
 	private int score = 0;
 	private int livesLeft = 3;
@@ -47,10 +49,17 @@ public class SpaceInvadersScreen extends Screen {
 			isPaused ^= true;
 		}
 
+		if (livesLeft < 0) {
+			isGameOver = true;
+		}
+		
 		if (!isPaused && !isGameOver) {
 			if (player.isDead()) {
 				livesLeft -= 1;
-				// remove one counter from the lives
+				if (livesLeft > -1) {
+					isPaused = true;
+					isDeathAnimation = true;
+				}
 			}
 			
 			for (ProjectileSprite sprite : projectileSprites) {
@@ -62,11 +71,35 @@ public class SpaceInvadersScreen extends Screen {
 			disposeSprites();
 		}
 		
-		if (livesLeft < 1) {
-			isGameOver = true;
+		if (isDeathAnimation && isPaused) {
+			boolean deathAnimationComplete = updatePlayer(keyboard, actual_delta_time);
+			disposeSprites();
+			if (deathAnimationComplete) {
+				try {
+					TimeUnit.MILLISECONDS.sleep(500);
+				} catch (InterruptedException e) {
+					System.err.println(e.toString());
+				}
+				
+				player = new TurretSprite(0, 257);
+				getActiveSprites().add(player);
+				isDeathAnimation = false;
+				isPaused = false;
+			}
 		}
 	}
 
+	boolean updatePlayer(KeyboardInput keyboard, long actual_delta_time) {
+		boolean deathComplete = true;
+		for (ActiveSprite activeSprite : activeSprites) {
+			if (activeSprite instanceof TurretSprite) {
+				deathComplete = false;
+				activeSprite.update(this, keyboard, actual_delta_time);
+			}
+    	}  
+		return deathComplete;
+	}
+	
 	public void addScore(int score) {
 		this.score += score;
 	}
