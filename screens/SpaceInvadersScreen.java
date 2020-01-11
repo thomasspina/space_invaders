@@ -76,7 +76,7 @@ public class SpaceInvadersScreen extends Screen {
 			disposeSprites();
 			if (deathAnimationComplete) {
 				try {
-					TimeUnit.MILLISECONDS.sleep(500);
+					TimeUnit.MILLISECONDS.sleep(1000);
 				} catch (InterruptedException e) {
 					System.err.println(e.toString());
 				}
@@ -100,15 +100,19 @@ public class SpaceInvadersScreen extends Screen {
 		return deathComplete;
 	}
 	
-	public void addScore(int score) {
+	void addScore(int score) {
 		this.score += score;
 	}
 
-	public int getScore() {
+	int getScore() {
 		return score;
 	}
 	
-	public boolean isGameOver() {
+	boolean isGameOver() {
 		return isGameOver;
+	}
+
+	public int getLivesLeft() {
+		return livesLeft;
 	}
 }

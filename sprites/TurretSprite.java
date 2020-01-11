@@ -12,6 +12,7 @@ public class TurretSprite extends ActiveSprite {
     private final static int BLINK_FREQUENCY = 200;
     
     private AudioPlayer explosionSound = new AudioPlayer();
+    private AudioPlayer respawnSound = new AudioPlayer();
 
     private boolean isSpawning = true;
     private boolean isOnRightEdge = false;
@@ -48,6 +49,8 @@ public class TurretSprite extends ActiveSprite {
         } catch (IOException e) {
             System.err.println(e.toString());
         }
+
+        respawnSound.playAsynchronous("res/respawn.wav");
     }
 
     @Override

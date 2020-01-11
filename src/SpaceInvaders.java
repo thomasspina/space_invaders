@@ -9,8 +9,12 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -26,7 +30,6 @@ public class SpaceInvaders extends JFrame {
 	
 	private int xpCenter = SCREEN_WIDTH / 2;
 	private int ypCenter = SCREEN_HEIGHT / 2;
-	
 	private double scale = 1;
 	private double xCenter = 0;		
 	private double yCenter = 0;
@@ -36,6 +39,8 @@ public class SpaceInvaders extends JFrame {
 	private FadeLabel lblFadeLabel;
 	private JLabel lblMiddleLabel;
 	private JLabel lblScoreText;
+	BufferedImage livesCounterImage;
+
 	Timer fadeTimer;
 	private static Thread game;
 	
@@ -89,7 +94,13 @@ public class SpaceInvaders extends JFrame {
 		} catch (Exception e) {
 			score = "0";
 		}
-		
+
+		try {
+			livesCounterImage = ImageIO.read(new File("res/turret/turret_0.png"));
+		} catch (IOException e) {
+			System.err.println(e.toString());
+		}
+
 		Container cp = getContentPane();
 		cp.setBackground(Color.BLACK);
 		cp.setLayout(null);
@@ -262,6 +273,14 @@ public class SpaceInvaders extends JFrame {
 					}
 				}
 			}
+
+
+			int position = 700;
+			for (int i = 0; i < ((SpaceInvadersScreen) screen).getLivesLeft(); i++) {
+				g.drawImage(livesCounterImage, position, 10, null);
+				position -= 50;
+			}
+
 
 			for (ActiveSprite activeSprite : activeSprites) {
 				if (activeSprite.getImage() != null) {
