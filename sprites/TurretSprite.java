@@ -133,7 +133,7 @@ public class TurretSprite extends ActiveSprite {
             	}
             	
                 if (isDead) {
-                    explosionSound.playAsynchronous("res/explosion_1.wav");
+                    explosionSound.playAsynchronous("res/turretExplosion.wav");
                     sprite.setDispose();
                     break;
                 }
@@ -163,7 +163,7 @@ public class TurretSprite extends ActiveSprite {
         }
     }
     
-    public boolean isDead() {
+    boolean isDead() {
 		return isDead;
 	}
 }

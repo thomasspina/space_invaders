@@ -140,7 +140,7 @@ public class AlienSprite extends ActiveSprite {
 
 				if (isDead) {
 					((SpaceInvadersScreen) screen).addScore(pointValue);
-					explosionSound.playAsynchronous("res/explosion_0.wav");
+					explosionSound.playAsynchronous("res/alienExplosion.wav");
 					sprite.setDispose();
 					break;
 				}
