@@ -14,9 +14,13 @@ public class ProjectileSprite extends ActiveSprite {
 
 	private AudioPlayer projectileSound = null;
 	private Image image;
+	private Image[] projectileExplosion = new Image[5];
+	private int explosionFrame = -1;
 	
 	private double speed;
 	private ProjectileType type;
+
+	private boolean hasHitShield = false;
 	
 	ProjectileSprite(double centerX, double centerY, ProjectileType projectileType) {
 		super();
@@ -38,8 +42,12 @@ public class ProjectileSprite extends ActiveSprite {
 		
 		try {
 			image = ImageIO.read(new File(imageFilePath));
-		}
-		catch (IOException e) {
+			projectileExplosion[0] = ImageIO.read(new File("res/alienProjectileExplosion_0.png"));
+			projectileExplosion[1] = ImageIO.read(new File("res/alienProjectileExplosion_1.png"));
+			projectileExplosion[2] = ImageIO.read(new File("res/alienProjectileExplosion_2.png"));
+			projectileExplosion[3] = ImageIO.read(new File("res/alienProjectileExplosion_3.png"));
+			projectileExplosion[4] = ImageIO.read(new File("res/alienProjectileExplosion_4.png"));
+		} catch (IOException e) {
 			System.err.println(e.toString());
 		}
 		
@@ -52,15 +60,24 @@ public class ProjectileSprite extends ActiveSprite {
 	
 	@Override
 	public Image getImage() {
+		if (hasHitShield) {
+			if (explosionFrame != 5) {
+				explosionFrame++;
+			}
+			return projectileExplosion[explosionFrame];
+		}
+
 		return image;
 	}
 		
 	@Override
 	public void update(Screen screen, KeyboardInput keyboard, long actual_delta_time) {
 
-	    setCenterY(getCenterY() + speed);
+		if (!hasHitShield) {
+			setCenterY(getCenterY() + speed);
+		}
 
-	    if (isOutOfBounds()) {
+	    if (isOutOfBounds() || explosionFrame == 4) {
 	    	setDispose();
 		}
 	}
@@ -70,5 +87,9 @@ public class ProjectileSprite extends ActiveSprite {
 	}
 
 	ProjectileType getType() { return type; }
+
+	void hasHitShield() {
+		hasHitShield = true;
+	}
 }
 

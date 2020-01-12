@@ -4,11 +4,17 @@ import java.io.File;
 import java.io.IOException;
 
 public class ShieldSprite extends StaticSprite {
+    private final static int HITS_MAX = 12;
 
-    Image[] shieldImages = new Image[6];
-    Image[] shieldExplosion = new Image[8];
+    private Image[] shieldImages = new Image[6];
+    private Image[] shieldExplosion = new Image[8];
+    private int explosionFrame = -1;
 
-    int hitCounter = 0;
+    private boolean isDestroyed = false;
+    private int hitCounter = 0;
+
+    private AudioPlayer hitSound = new AudioPlayer();
+
 
     ShieldSprite(double centerX, double centerY) {
         super();
@@ -35,10 +41,43 @@ public class ShieldSprite extends StaticSprite {
 
     @Override
     public Image getImage() {
+        if (!isDestroyed) {
 
+        } else {
+            if (explosionFrame != 8) {
+                explosionFrame++;
+            }
+            return shieldExplosion[explosionFrame];
+        }
     }
 
     public void update(Screen screen, KeyboardInput keyboard, long actual_delta_time) {
+        collidedWithObject(screen);
+    }
 
+    private void collidedWithObject(Screen screen) {
+        for (ActiveSprite sprite : screen.getActiveSprites()) {
+            if (sprite instanceof ProjectileSprite) {
+                boolean isHit = CollisionDetection.overlaps(
+                        getMinX(),
+                        getMinY(),
+                        getMaxX(),
+                        getMaxY(),
+                        sprite.getMinX(),
+                        sprite.getMinY(),
+                        sprite.getMaxX(),
+                        sprite.getMaxY());
+
+                if (isHit) {
+                    if (((ProjectileSprite) sprite).getType() == ProjectileType.ALIEN) {
+                        hitCounter++;
+                        hitSound.playAsynchronous("res/projectileShieldExplosion.wav");
+                        ((ProjectileSprite) sprite).hasHitShield();
+                    } else {
+                        sprite.setDispose();
+                    }
+                }
+            }
+        }
     }
 }
