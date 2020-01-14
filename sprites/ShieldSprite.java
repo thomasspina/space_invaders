@@ -3,8 +3,10 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
-public class ShieldSprite extends StaticSprite {
-    private final static int HITS_MAX = 12;
+public class ShieldSprite extends ActiveSprite {
+    private final static int HITS_MAX = 6;
+    private final static int WIDTH = 40;
+    private final static int HEIGHT = 40;
 
     private Image[] shieldImages = new Image[6];
     private Image[] shieldExplosion = new Image[8];
@@ -18,6 +20,11 @@ public class ShieldSprite extends StaticSprite {
 
     ShieldSprite(double centerX, double centerY) {
         super();
+        setCenterX(centerX);
+        setCenterY(centerY);
+        setHeight(HEIGHT);
+        setWidth(WIDTH);
+
         try {
             shieldImages[0] = ImageIO.read(new File("res/shield/shield_0.png"));
             shieldImages[1] = ImageIO.read(new File("res/shield/shield_1.png"));
@@ -42,37 +49,38 @@ public class ShieldSprite extends StaticSprite {
     @Override
     public Image getImage() {
         if (!isDestroyed) {
-
+            return shieldImages[hitCounter];
         } else {
-            if (explosionFrame != 8) {
+            if (explosionFrame != 7) {
                 explosionFrame++;
             }
             return shieldExplosion[explosionFrame];
         }
     }
 
+    @Override
     public void update(Screen screen, KeyboardInput keyboard, long actual_delta_time) {
         collidedWithObject(screen);
+
+        if (hitCounter == HITS_MAX - 1) {
+            isDestroyed = true;
+        }
+
+        if (explosionFrame == 7) {
+            setDispose();
+        }
     }
 
     private void collidedWithObject(Screen screen) {
         for (ActiveSprite sprite : screen.getActiveSprites()) {
             if (sprite instanceof ProjectileSprite) {
-                boolean isHit = CollisionDetection.overlaps(
-                        getMinX(),
-                        getMinY(),
-                        getMaxX(),
-                        getMaxY(),
-                        sprite.getMinX(),
-                        sprite.getMinY(),
-                        sprite.getMaxX(),
-                        sprite.getMaxY());
+                boolean isHit = CollisionDetection.pixelBasedOverlaps(this, sprite);
 
                 if (isHit) {
-                    if (((ProjectileSprite) sprite).getType() == ProjectileType.ALIEN) {
+                    if (((ProjectileSprite) sprite).getType() == ProjectileType.ALIEN && !((ProjectileSprite) sprite).hasHitShield()) {
                         hitCounter++;
                         hitSound.playAsynchronous("res/projectileShieldExplosion.wav");
-                        ((ProjectileSprite) sprite).hasHitShield();
+                        ((ProjectileSprite) sprite).setHasHitShield();
                     } else {
                         sprite.setDispose();
                     }

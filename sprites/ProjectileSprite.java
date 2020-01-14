@@ -1,7 +1,6 @@
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
 
 public class ProjectileSprite extends ActiveSprite {
@@ -42,11 +41,11 @@ public class ProjectileSprite extends ActiveSprite {
 		
 		try {
 			image = ImageIO.read(new File(imageFilePath));
-			projectileExplosion[0] = ImageIO.read(new File("res/alienProjectileExplosion_0.png"));
-			projectileExplosion[1] = ImageIO.read(new File("res/alienProjectileExplosion_1.png"));
-			projectileExplosion[2] = ImageIO.read(new File("res/alienProjectileExplosion_2.png"));
-			projectileExplosion[3] = ImageIO.read(new File("res/alienProjectileExplosion_3.png"));
-			projectileExplosion[4] = ImageIO.read(new File("res/alienProjectileExplosion_4.png"));
+			projectileExplosion[0] = ImageIO.read(new File("res/alienProjectileExplosion/alienProjectileExplosion_0.png"));
+			projectileExplosion[1] = ImageIO.read(new File("res/alienProjectileExplosion/alienProjectileExplosion_1.png"));
+			projectileExplosion[2] = ImageIO.read(new File("res/alienProjectileExplosion/alienProjectileExplosion_2.png"));
+			projectileExplosion[3] = ImageIO.read(new File("res/alienProjectileExplosion/alienProjectileExplosion_3.png"));
+			projectileExplosion[4] = ImageIO.read(new File("res/alienProjectileExplosion/alienProjectileExplosion_4.png"));
 		} catch (IOException e) {
 			System.err.println(e.toString());
 		}
@@ -61,7 +60,9 @@ public class ProjectileSprite extends ActiveSprite {
 	@Override
 	public Image getImage() {
 		if (hasHitShield) {
-			if (explosionFrame != 5) {
+			setWidth(40);
+			setHeight(40);
+			if (explosionFrame != 4) {
 				explosionFrame++;
 			}
 			return projectileExplosion[explosionFrame];
@@ -72,7 +73,6 @@ public class ProjectileSprite extends ActiveSprite {
 		
 	@Override
 	public void update(Screen screen, KeyboardInput keyboard, long actual_delta_time) {
-
 		if (!hasHitShield) {
 			setCenterY(getCenterY() + speed);
 		}
@@ -88,8 +88,12 @@ public class ProjectileSprite extends ActiveSprite {
 
 	ProjectileType getType() { return type; }
 
-	void hasHitShield() {
+	void setHasHitShield() {
 		hasHitShield = true;
+	}
+
+	boolean hasHitShield() {
+		return hasHitShield;
 	}
 }
 

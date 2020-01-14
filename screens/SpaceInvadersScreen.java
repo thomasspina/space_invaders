@@ -31,7 +31,16 @@ public class SpaceInvadersScreen extends Screen {
 				alienType--;
 			}
 		}
-		
+
+		yPosition = 200;
+		int xPosition = -300;
+
+		for (int i = 0; i < 8; i++) {
+			ShieldSprite shield = new ShieldSprite(xPosition, yPosition);
+			activeSprites.add(shield);
+			xPosition += 80;
+		}
+
 		player = new TurretSprite(0, 257);
 		activeSprites.add(player);
 

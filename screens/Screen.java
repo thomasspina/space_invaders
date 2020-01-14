@@ -54,12 +54,13 @@ public abstract class Screen {
     }
     
     void disposeSprites() {
-    
+
 		for (ActiveSprite activeSprite : activeSprites) {
     		if (activeSprite.getDispose()) {
     			disposalList.add(activeSprite);
     		}
     	}
+
 		for (ActiveSprite activeSprite : disposalList) {
 			activeSprites.remove(activeSprite);
     	}

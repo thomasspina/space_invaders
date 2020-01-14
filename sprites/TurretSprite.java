@@ -117,18 +117,14 @@ public class TurretSprite extends ActiveSprite {
     private void collidedWithObject(Screen screen) {
         for (ActiveSprite sprite : screen.getActiveSprites()) {
             if (sprite instanceof ProjectileSprite && ((ProjectileSprite) sprite).getType() == ProjectileType.ALIEN) {
-            	isDead = CollisionDetection.overlaps(
-                        getMinX(),
-                        getMinY(),
-                        getMaxX(),
-                        getMaxY(),
-                        sprite.getMinX(),
-                        sprite.getMinY(),
-                        sprite.getMaxX(),
-                        sprite.getMaxY());
+            	isDead = CollisionDetection.overlaps(getMinX(), getMinY(), getMaxX(), getMaxY(),
+                        sprite.getMinX(), sprite.getMinY(), sprite.getMaxX(), sprite.getMaxY());
 
             	if (isDead && isSpawning) {
-            		sprite.setDispose();
+            	    if (CollisionDetection.covers(getMinX(), getMinY(), getMaxX(), getMaxY(),
+                            sprite.getMinX(), sprite.getMinY(), sprite.getMaxX(), sprite.getMaxY())) {
+                        sprite.setDispose();
+                    }
             		isDead = false;
             	}
             	
