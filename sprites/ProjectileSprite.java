@@ -8,14 +8,8 @@ public class ProjectileSprite extends ActiveSprite {
 	private static final int WIDTH = 3;
 	private static final int HEIGHT = 10;
 
-	private String imageFilePath;
-	private String soundFilePath;
-
-	private AudioPlayer projectileSound = null;
 	private Image image;
-	private Image[] projectileExplosion = new Image[5];
-	private int explosionFrame = -1;
-	
+
 	private double speed;
 	private ProjectileType type;
 
@@ -23,11 +17,13 @@ public class ProjectileSprite extends ActiveSprite {
 	
 	ProjectileSprite(double centerX, double centerY, ProjectileType projectileType) {
 		super();
-		this.setCenterX(centerX);
-		this.setCenterY(centerY);
-		this.setWidth(WIDTH);
-		this.setHeight(HEIGHT);
+		setCenterX(centerX);
+		setCenterY(centerY);
+		setWidth(WIDTH);
+		setHeight(HEIGHT);
 		type = projectileType;
+		String soundFilePath;
+		String imageFilePath;
 
 		if (projectileType == ProjectileType.TURRET) {
 			speed = -6;
@@ -41,33 +37,16 @@ public class ProjectileSprite extends ActiveSprite {
 		
 		try {
 			image = ImageIO.read(new File(imageFilePath));
-			projectileExplosion[0] = ImageIO.read(new File("res/alienProjectileExplosion/alienProjectileExplosion_0.png"));
-			projectileExplosion[1] = ImageIO.read(new File("res/alienProjectileExplosion/alienProjectileExplosion_1.png"));
-			projectileExplosion[2] = ImageIO.read(new File("res/alienProjectileExplosion/alienProjectileExplosion_2.png"));
-			projectileExplosion[3] = ImageIO.read(new File("res/alienProjectileExplosion/alienProjectileExplosion_3.png"));
-			projectileExplosion[4] = ImageIO.read(new File("res/alienProjectileExplosion/alienProjectileExplosion_4.png"));
 		} catch (IOException e) {
 			System.err.println(e.toString());
 		}
-		
-		if (projectileSound == null) {
-			projectileSound = new AudioPlayer();
-		}
-		
+
+		AudioPlayer projectileSound = new AudioPlayer();
 		projectileSound.playAsynchronous(soundFilePath);
 	}
 	
 	@Override
 	public Image getImage() {
-		if (hasHitShield) {
-			setWidth(40);
-			setHeight(40);
-			if (explosionFrame != 4) {
-				explosionFrame++;
-			}
-			return projectileExplosion[explosionFrame];
-		}
-
 		return image;
 	}
 		
@@ -77,7 +56,7 @@ public class ProjectileSprite extends ActiveSprite {
 			setCenterY(getCenterY() + speed);
 		}
 
-	    if (isOutOfBounds() || explosionFrame == 4) {
+	    if (isOutOfBounds()) {
 	    	setDispose();
 		}
 	}

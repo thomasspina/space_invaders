@@ -4,13 +4,13 @@ import java.io.File;
 import java.io.IOException;
 
 public class ShieldSprite extends ActiveSprite {
-    private final static int HITS_MAX = 6;
     private final static int WIDTH = 40;
     private final static int HEIGHT = 40;
 
     private Image[] shieldImages = new Image[6];
     private Image[] shieldExplosion = new Image[8];
     private int explosionFrame = -1;
+    private int shieldFrame = 0;
 
     private boolean isDestroyed = false;
     private int hitCounter = 0;
@@ -49,7 +49,7 @@ public class ShieldSprite extends ActiveSprite {
     @Override
     public Image getImage() {
         if (!isDestroyed) {
-            return shieldImages[hitCounter];
+            return shieldImages[shieldFrame];
         } else {
             if (explosionFrame != 7) {
                 explosionFrame++;
@@ -61,10 +61,6 @@ public class ShieldSprite extends ActiveSprite {
     @Override
     public void update(Screen screen, KeyboardInput keyboard, long actual_delta_time) {
         collidedWithObject(screen);
-
-        if (hitCounter == HITS_MAX - 1) {
-            isDestroyed = true;
-        }
 
         if (explosionFrame == 7) {
             setDispose();
@@ -81,6 +77,15 @@ public class ShieldSprite extends ActiveSprite {
                         hitCounter++;
                         hitSound.playAsynchronous("res/projectileShieldExplosion.wav");
                         ((ProjectileSprite) sprite).setHasHitShield();
+
+                        if (hitCounter == 2) {
+                            if (shieldFrame == 5) {
+                                isDestroyed = true;
+                            } else {
+                                shieldFrame++;
+                            }
+                            hitCounter = 0;
+                        }
                     } else {
                         sprite.setDispose();
                     }

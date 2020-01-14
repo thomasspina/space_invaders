@@ -9,15 +9,13 @@ public class AlienSprite extends ActiveSprite {
 	private static final int WIDTH = 32;
 	private static final int X_SHIFT_DISTANCE = 10;
 	private static final int Y_SHIFT_DISTANCE = 15;
-	private static final double SHOOTING_PROBABILITY = 0.005;
+	private static final double SHOOTING_PROBABILITY = 0.007;
 	
 	private static Image[] explosionFrames;
 
 	private AudioPlayer explosionSound = new AudioPlayer();
 	
 	final private int pointValue;
-	final private File firstFrameFile;
-	final private File secondFrameFile;
 	private Image movementFirstFrame;
 	private Image movementSecondFrame;
 
@@ -25,12 +23,11 @@ public class AlienSprite extends ActiveSprite {
 	private int explosionFrame = -1;
 	private boolean onFirstFrame = true;
 	private boolean isDead = false;
-	private boolean shiftingY = false;
-	private boolean justShiftedY = false;
-	private boolean isShooting = false;
+	private boolean shiftY = false;
+	private boolean changedDirection = false;
 	
 	private long previousTime = 0;
-	private int shiftPeriod = 300;
+	private int shiftPeriod = 500;
 	
 	AlienSprite(int alienType, double centerX, double centerY) {
 		super();
@@ -38,6 +35,9 @@ public class AlienSprite extends ActiveSprite {
 		setCenterY(centerY);
 		setWidth(WIDTH);
 		setHeight(HEIGHT);
+
+		File firstFrameFile;
+		File secondFrameFile;
 
 		switch(alienType) {
 			case 1:
@@ -88,8 +88,9 @@ public class AlienSprite extends ActiveSprite {
 	
 	@Override
 	public void update(Screen screen, KeyboardInput keyboard, long actual_delta_time) {
+		boolean isShooting;
 		previousTime += actual_delta_time;
-		
+
 		if (!isDead) {
 			collidedWithObject(screen);
 
@@ -98,30 +99,29 @@ public class AlienSprite extends ActiveSprite {
 				onFirstFrame ^= true;
 				previousTime -= shiftPeriod;
 				
-				if (shiftingY) {
-					shiftingY = false;
-					justShiftedY = true;
-					setCenterY(getCenterY() + Y_SHIFT_DISTANCE); 
+				if (shiftY) {
+					shiftY = false;
+					changedDirection = true;
+					direction *= -1;
+					setCenterY(getCenterY() + Y_SHIFT_DISTANCE);
 				} else {
-					if (justShiftedY) {
-						direction *= -1;
-						justShiftedY = false;
+					if (changedDirection) {
+						changedDirection = false;
 					}
 					setCenterX(getCenterX() + (X_SHIFT_DISTANCE * direction));
 				}
 				
 				if (isShooting) {
 					((SpaceInvadersScreen) screen).shoot(getCenterX(), getCenterY(), ProjectileType.ALIEN);
-					isShooting = false;
 				}
 				
 			} 
 		}
 		
 		if (explosionFrame == 6) {
+			((SpaceInvadersScreen) screen).removeAlien();
 			setDispose();
 		}
-		
 	}
 	
 	private void collidedWithObject(Screen screen) {
@@ -159,20 +159,20 @@ public class AlienSprite extends ActiveSprite {
 						sprite.getMaxX(),
 						sprite.getMaxY());
 				
-				if (!justShiftedY && !shiftingY && onScreenEdge) {
-					for (ActiveSprite activeSprite : screen.getActiveSprites()) {
-						if (activeSprite instanceof AlienSprite) {
-							((AlienSprite) activeSprite).shiftY();
-						}
-					}
+				if (!shiftY && !changedDirection && onScreenEdge) {
+					((SpaceInvadersScreen) screen).shiftAliensDown();
 					break;
 				}
 			}
 		}
 	}
-	
-	private void shiftY() {
-		shiftingY = true;
+
+	void shiftY() {
+		shiftY = true;
+	}
+
+	void setIncreasedSpeed(int speed) {
+		shiftPeriod = speed;
 	}
 }
 
