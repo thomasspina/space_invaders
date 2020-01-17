@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class SpaceInvadersScreen extends Screen {
-
+	final private static double SAUCER_SPAWN_PROB = 0.0001;
 	private boolean isPaused = false;
 	private boolean isGameOver = false;
 	private boolean isDeathAnimation = false;
@@ -11,6 +11,7 @@ public class SpaceInvadersScreen extends Screen {
 	private int livesLeft = 3;
 	private int aliensCount = 55;
 	private boolean aliensCleared = false;
+	private boolean isSaucerSpawned = false;
 	private TurretSprite player;
 	
 	SpaceInvadersScreen() {
@@ -49,7 +50,7 @@ public class SpaceInvadersScreen extends Screen {
 		if (livesLeft < 0) {
 			isGameOver = true;
 		}
-		
+
 		if (!isPaused && !isGameOver) {
 			if (aliensCleared) {
 				try {
@@ -74,7 +75,14 @@ public class SpaceInvadersScreen extends Screen {
 					isDeathAnimation = true;
 				}
 			}
-			
+
+			if (!isSaucerSpawned) {
+				if (Math.random() <= SAUCER_SPAWN_PROB) {
+					getActiveSprites().add(new FlyingSaucerSprite(450, -250));
+				}
+				isSaucerSpawned = true;
+			}
+
 			for (ProjectileSprite sprite : projectileSprites) {
 				getActiveSprites().add(sprite);
 			}
@@ -127,6 +135,10 @@ public class SpaceInvadersScreen extends Screen {
 
 	int getLivesLeft() {
 		return livesLeft;
+	}
+
+	void flyingSaucerExploded() {
+		isSaucerSpawned = false;
 	}
 
 	void removeAlien() {

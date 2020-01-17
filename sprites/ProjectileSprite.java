@@ -52,9 +52,7 @@ public class ProjectileSprite extends ActiveSprite {
 		
 	@Override
 	public void update(Screen screen, KeyboardInput keyboard, long actual_delta_time) {
-		if (!hasHitShield) {
-			setCenterY(getCenterY() + speed);
-		}
+		setCenterY(getCenterY() + speed);
 
 	    if (isOutOfBounds()) {
 	    	setDispose();
@@ -66,13 +64,5 @@ public class ProjectileSprite extends ActiveSprite {
 	}
 
 	ProjectileType getType() { return type; }
-
-	void setHasHitShield() {
-		hasHitShield = true;
-	}
-
-	boolean hasHitShield() {
-		return hasHitShield;
-	}
 }
 

@@ -17,7 +17,6 @@ public class ShieldSprite extends ActiveSprite {
 
     private AudioPlayer hitSound = new AudioPlayer();
 
-
     ShieldSprite(double centerX, double centerY) {
         super();
         setCenterX(centerX);
@@ -73,10 +72,10 @@ public class ShieldSprite extends ActiveSprite {
                 boolean isHit = CollisionDetection.pixelBasedOverlaps(this, sprite);
 
                 if (isHit) {
-                    if (((ProjectileSprite) sprite).getType() == ProjectileType.ALIEN && !((ProjectileSprite) sprite).hasHitShield()) {
+                    if (((ProjectileSprite) sprite).getType() == ProjectileType.ALIEN) {
                         hitCounter++;
                         hitSound.playAsynchronous("res/projectileShieldExplosion.wav");
-                        ((ProjectileSprite) sprite).setHasHitShield();
+                        sprite.setDispose();
 
                         if (hitCounter == 2) {
                             if (shieldFrame == 5) {

@@ -21,6 +21,12 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
+// TODO bug where one alien is ahead of the others
+// TODO add the flying saucer
+// TODO add a "reward" when you clear the board (and a graphic of some sort)
+// TODO fix concurrent modification error
+// TODO write journal and everything else to get 100
+
 public class SpaceInvaders extends JFrame {
 	
 	final public static int FRAMES_PER_SECOND = 60;
