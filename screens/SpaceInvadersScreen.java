@@ -1,8 +1,9 @@
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class SpaceInvadersScreen extends Screen {
-	final private static double SAUCER_SPAWN_PROB = 0.0001;
+	final private static double SAUCER_SPAWN_PROB = 0.0005;
 	private boolean isPaused = false;
 	private boolean isGameOver = false;
 	private boolean isDeathAnimation = false;
@@ -79,8 +80,8 @@ public class SpaceInvadersScreen extends Screen {
 			if (!isSaucerSpawned) {
 				if (Math.random() <= SAUCER_SPAWN_PROB) {
 					getActiveSprites().add(new FlyingSaucerSprite(450, -250));
+					isSaucerSpawned = true;
 				}
-				isSaucerSpawned = true;
 			}
 
 			for (ProjectileSprite sprite : projectileSprites) {

@@ -23,6 +23,7 @@ import javax.swing.Timer;
 
 // TODO bug where one alien is ahead of the others
 // TODO add the flying saucer
+// TODO bug where aliens won't shift down when at edge of screen
 // TODO add a "reward" when you clear the board (and a graphic of some sort)
 // TODO fix concurrent modification error
 // TODO write journal and everything else to get 100

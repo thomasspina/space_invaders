@@ -6,7 +6,7 @@ import java.io.IOException;
 public class FlyingSaucerSprite extends ActiveSprite {
     final private static int WIDTH = 32;
     final private static int HEIGHT = 32;
-    final private static double SPEED = 1.75;
+    final private static double SPEED = -1.75;
     final private static int POINT_VALUE = 250;
 
     private AudioPlayer explosionSound = new AudioPlayer();
@@ -16,7 +16,6 @@ public class FlyingSaucerSprite extends ActiveSprite {
     private int explosionFrame = -1;
 
     private boolean isDead = false;
-    private int direction = 1;
 
     FlyingSaucerSprite(double CenterX, double CenterY) {
         super();
@@ -28,13 +27,22 @@ public class FlyingSaucerSprite extends ActiveSprite {
         try {
             image = ImageIO.read(new File("res/saucer/saucer_0.png"));
             explosionFrames = new Image[] {
-                    ImageIO.read(new File("res/alienExplosion/explosion_0.png")),
-                    ImageIO.read(new File("res/alienExplosion/explosion_1.png")),
-                    ImageIO.read(new File("res/alienExplosion/explosion_2.png")),
-                    ImageIO.read(new File("res/alienExplosion/explosion_3.png")),
-                    ImageIO.read(new File("res/alienExplosion/explosion_4.png")),
-                    ImageIO.read(new File("res/alienExplosion/explosion_5.png")),
-                    ImageIO.read(new File("res/alienExplosion/explosion_6.png"))
+                    ImageIO.read(new File("res/saucerExplosion/saucerExplosion_00.png")),
+                    ImageIO.read(new File("res/saucerExplosion/saucerExplosion_01.png")),
+                    ImageIO.read(new File("res/saucerExplosion/saucerExplosion_02.png")),
+                    ImageIO.read(new File("res/saucerExplosion/saucerExplosion_03.png")),
+                    ImageIO.read(new File("res/saucerExplosion/saucerExplosion_04.png")),
+                    ImageIO.read(new File("res/saucerExplosion/saucerExplosion_05.png")),
+                    ImageIO.read(new File("res/saucerExplosion/saucerExplosion_06.png")),
+                    ImageIO.read(new File("res/saucerExplosion/saucerExplosion_07.png")),
+                    ImageIO.read(new File("res/saucerExplosion/saucerExplosion_08.png")),
+                    ImageIO.read(new File("res/saucerExplosion/saucerExplosion_09.png")),
+                    ImageIO.read(new File("res/saucerExplosion/saucerExplosion_10.png")),
+                    ImageIO.read(new File("res/saucerExplosion/saucerExplosion_11.png")),
+                    ImageIO.read(new File("res/saucerExplosion/saucerExplosion_12.png")),
+                    ImageIO.read(new File("res/saucerExplosion/saucerExplosion_13.png")),
+                    ImageIO.read(new File("res/saucerExplosion/saucerExplosion_14.png")),
+                    ImageIO.read(new File("res/saucerExplosion/saucerExplosion_15.png"))
             };
         } catch (IOException e) {
             System.err.println(e.toString());
@@ -46,7 +54,7 @@ public class FlyingSaucerSprite extends ActiveSprite {
         if (!isDead) {
             return image;
         } else {
-            if (explosionFrame != 6) {
+            if (explosionFrame != 15) {
                 explosionFrame++;
             }
             return explosionFrames[explosionFrame];
@@ -55,15 +63,10 @@ public class FlyingSaucerSprite extends ActiveSprite {
 
     @Override
     public void update(Screen screen, KeyboardInput keyboard, long actual_delta_time) {
-
-        if (isOutOfBounds()) {
-            direction *= -1;
-        }
-
         collidedWithObject(screen);
-        setCenterX(getCenterX() + (SPEED * direction));
+        setCenterX(getCenterX() + SPEED);
 
-        if (explosionFrame == 6) {
+        if (explosionFrame == 15 || isOutOfBounds()) {
             ((SpaceInvadersScreen) screen).flyingSaucerExploded();
             setDispose();
         }
