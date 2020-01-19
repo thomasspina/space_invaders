@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class SpaceInvadersScreen extends Screen {
@@ -69,7 +68,7 @@ public class SpaceInvadersScreen extends Screen {
 				aliensCleared = false;
 			}
 
-			if (player.isDead()) {
+			if (player.isDead() && !player.isAlienLanding()) {
 				livesLeft -= 1;
 				if (livesLeft > -1) {
 					isPaused = true;
@@ -86,6 +85,7 @@ public class SpaceInvadersScreen extends Screen {
 
 			for (ProjectileSprite sprite : projectileSprites) {
 				getActiveSprites().add(sprite);
+				sprite.playSound();
 			}
 			projectileSprites.clear();
 
@@ -134,6 +134,11 @@ public class SpaceInvadersScreen extends Screen {
 		return isGameOver;
 	}
 
+	void alienHasLanded() {
+		isGameOver = true;
+		livesLeft = 0;
+	}
+
 	int getLivesLeft() {
 		return livesLeft;
 	}
@@ -146,37 +151,37 @@ public class SpaceInvadersScreen extends Screen {
 		aliensCount--;
 		switch (aliensCount) {
 			case 50:
-				setAllAliensSpeed(480);
+				setAllAliensIncreasedStats(480, 0.007);
 				break;
 			case 45:
-				setAllAliensSpeed(430);
+				setAllAliensIncreasedStats(430, 0.007);
 				break;
 			case 40:
-				setAllAliensSpeed(380);
+				setAllAliensIncreasedStats(380, 0.007);
 				break;
 			case 35:
-				setAllAliensSpeed(330);
+				setAllAliensIncreasedStats(330, 0.007);
 				break;
 			case 30:
-				setAllAliensSpeed(280);
+				setAllAliensIncreasedStats(280, 0.007);
 				break;
 			case 25:
-				setAllAliensSpeed(240);
+				setAllAliensIncreasedStats(240, 0.007);
 				break;
 			case 20:
-				setAllAliensSpeed(200);
+				setAllAliensIncreasedStats(200, 0.008);
 				break;
 			case 15:
-				setAllAliensSpeed(170);
+				setAllAliensIncreasedStats(170, 0.009);
 				break;
 			case 10:
-				setAllAliensSpeed(140);
+				setAllAliensIncreasedStats(140, 0.01);
 				break;
 			case 5:
-				setAllAliensSpeed(100);
+				setAllAliensIncreasedStats(100, 0.02);
 				break;
 			case 1:
-				setAllAliensSpeed(75);
+				setAllAliensIncreasedStats(75, 0.05);
 				break;
 			case 0:
 				aliensCleared = true;
@@ -184,10 +189,11 @@ public class SpaceInvadersScreen extends Screen {
 		}
 	}
 
-	private void setAllAliensSpeed(int newSpeed) {
+	private void setAllAliensIncreasedStats(int newSpeed, double newShootingProbability) {
 		for (ActiveSprite sprite : getActiveSprites()) {
 			if (sprite instanceof AlienSprite) {
 				((AlienSprite) sprite).setIncreasedSpeed(newSpeed);
+				((AlienSprite) sprite).setIncreasedShootingFrequency(newShootingProbability);
 			}
 		}
 	}

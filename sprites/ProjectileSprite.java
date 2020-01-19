@@ -7,14 +7,12 @@ public class ProjectileSprite extends ActiveSprite {
 
 	private static final int WIDTH = 3;
 	private static final int HEIGHT = 10;
-
 	private Image image;
-
 	private double speed;
 	private ProjectileType type;
+	private String soundFilePath;
+	private AudioPlayer projectileSound = new AudioPlayer();
 
-	private boolean hasHitShield = false;
-	
 	ProjectileSprite(double centerX, double centerY, ProjectileType projectileType) {
 		super();
 		setCenterX(centerX);
@@ -22,7 +20,6 @@ public class ProjectileSprite extends ActiveSprite {
 		setWidth(WIDTH);
 		setHeight(HEIGHT);
 		type = projectileType;
-		String soundFilePath;
 		String imageFilePath;
 
 		if (projectileType == ProjectileType.TURRET) {
@@ -41,8 +38,6 @@ public class ProjectileSprite extends ActiveSprite {
 			System.err.println(e.toString());
 		}
 
-		AudioPlayer projectileSound = new AudioPlayer();
-		projectileSound.playAsynchronous(soundFilePath);
 	}
 	
 	@Override
@@ -64,5 +59,9 @@ public class ProjectileSprite extends ActiveSprite {
 	}
 
 	ProjectileType getType() { return type; }
+
+	void playSound() {
+		projectileSound.playAsynchronous(soundFilePath);
+	}
 }
 

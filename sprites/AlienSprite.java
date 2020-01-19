@@ -9,25 +9,23 @@ public class AlienSprite extends ActiveSprite {
 	private static final int WIDTH = 32;
 	private static final int X_SHIFT_DISTANCE = 10;
 	private static final int Y_SHIFT_DISTANCE = 15;
-	private static final double SHOOTING_PROBABILITY = 0.007;
-	
+	private static final double INITIAL_SHOOTING_PROBABILITY = 0.007;
+	private static final int INITIAL_SHIFT_PERIOD = 500;
 	private static Image[] explosionFrames;
-
 	private AudioPlayer explosionSound = new AudioPlayer();
-	
 	final private int pointValue;
 	private Image movementFirstFrame;
 	private Image movementSecondFrame;
-
 	private int direction = 1;
 	private int explosionFrame = -1;
 	private boolean onFirstFrame = true;
 	private boolean isDead = false;
 	private boolean shiftY = false;
 	private boolean changedDirection = false;
-	
+	private boolean isLanding = false;
 	private long previousTime = 0;
-	private int shiftPeriod = 500;
+	private int shiftPeriod = INITIAL_SHIFT_PERIOD;
+	private double shootingProbability = INITIAL_SHOOTING_PROBABILITY;
 	
 	AlienSprite(int alienType, double centerX, double centerY) {
 		super();
@@ -91,15 +89,23 @@ public class AlienSprite extends ActiveSprite {
 		boolean isShooting;
 		previousTime += actual_delta_time;
 
+
+
 		if (!isDead) {
 			collidedWithObject(screen);
 
 			if (previousTime >= shiftPeriod) {
-				isShooting = Math.random() < SHOOTING_PROBABILITY;
+				isShooting = Math.random() < shootingProbability;
 				onFirstFrame ^= true;
 				previousTime -= shiftPeriod;
-				
-				if (shiftY) {
+
+				if (isLanding) {
+					if (getCenterY() >= 242) {
+						((SpaceInvadersScreen) screen).alienHasLanded();
+					}
+
+					setCenterY(getCenterY() + Y_SHIFT_DISTANCE);
+				} else if (shiftY) {
 					shiftY = false;
 					changedDirection = true;
 					direction *= -1;
@@ -111,13 +117,13 @@ public class AlienSprite extends ActiveSprite {
 					setCenterX(getCenterX() + (X_SHIFT_DISTANCE * direction));
 				}
 				
-				if (isShooting) {
+				if (isShooting && !isLanding) {
 					((SpaceInvadersScreen) screen).shoot(getCenterX(), getCenterY(), ProjectileType.ALIEN);
 				}
 				
 			} 
 		}
-		
+
 		if (explosionFrame == 6) {
 			((SpaceInvadersScreen) screen).removeAlien();
 			setDispose();
@@ -174,5 +180,15 @@ public class AlienSprite extends ActiveSprite {
 	void setIncreasedSpeed(int speed) {
 		shiftPeriod = speed;
 	}
+
+	void setIncreasedShootingFrequency(double probability) {
+		shootingProbability = probability;
+	}
+
+	void land() {
+		isLanding = true;
+		shiftPeriod = INITIAL_SHIFT_PERIOD;
+	}
 }
+
 

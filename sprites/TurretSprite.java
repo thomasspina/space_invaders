@@ -10,10 +10,9 @@ public class TurretSprite extends ActiveSprite {
     private final static int HEIGHT = 32;
     private final static int RESPAWN_SHOOT_DELAY = 500;
     private final static int BLINK_FREQUENCY = 200;
-    
     private AudioPlayer explosionSound = new AudioPlayer();
     private AudioPlayer respawnSound = new AudioPlayer();
-
+    private boolean alienIsLanding = false;
     private boolean isSpawning = true;
     private boolean isOnRightEdge = false;
     private boolean isOnLeftEdge = false;
@@ -158,8 +157,13 @@ public class TurretSprite extends ActiveSprite {
             }
         }
     }
-    
-    boolean isDead() {
-		return isDead;
-	}
+
+    void explode() {
+        isDead = true;
+        alienIsLanding = true;
+        explosionSound.playAsynchronous("res/turretExplosion.wav");
+    }
+
+    boolean isDead() { return isDead; }
+	boolean isAlienLanding() { return alienIsLanding; }
 }

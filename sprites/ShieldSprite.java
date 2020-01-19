@@ -10,12 +10,12 @@ public class ShieldSprite extends ActiveSprite {
     private Image[] shieldImages = new Image[6];
     private Image[] shieldExplosion = new Image[8];
     private int explosionFrame = -1;
-    private int shieldFrame = 0;
 
     private boolean isDestroyed = false;
     private int hitCounter = 0;
 
     private AudioPlayer hitSound = new AudioPlayer();
+    private AudioPlayer explosionSound = new AudioPlayer();
 
     ShieldSprite(double centerX, double centerY) {
         super();
@@ -48,7 +48,7 @@ public class ShieldSprite extends ActiveSprite {
     @Override
     public Image getImage() {
         if (!isDestroyed) {
-            return shieldImages[shieldFrame];
+            return shieldImages[hitCounter];
         } else {
             if (explosionFrame != 7) {
                 explosionFrame++;
@@ -68,22 +68,34 @@ public class ShieldSprite extends ActiveSprite {
 
     private void collidedWithObject(Screen screen) {
         for (ActiveSprite sprite : screen.getActiveSprites()) {
-            if (sprite instanceof ProjectileSprite) {
+            if (sprite instanceof AlienSprite) {
+                boolean isHit = CollisionDetection.pixelBasedOverlaps(this, sprite);
+
+                if (isHit) {
+                    for (ActiveSprite activeSprite : screen.getActiveSprites()) {
+                        if (activeSprite instanceof ShieldSprite) {
+                            ((ShieldSprite) activeSprite).explode();
+                        } else if (activeSprite instanceof TurretSprite) {
+                            ((TurretSprite) activeSprite).explode();
+                        }
+                    }
+
+                    ((AlienSprite) sprite).land();
+                }
+
+            } else if (sprite instanceof ProjectileSprite) {
                 boolean isHit = CollisionDetection.pixelBasedOverlaps(this, sprite);
 
                 if (isHit) {
                     if (((ProjectileSprite) sprite).getType() == ProjectileType.ALIEN) {
-                        hitCounter++;
                         hitSound.playAsynchronous("res/projectileShieldExplosion.wav");
                         sprite.setDispose();
 
-                        if (hitCounter == 2) {
-                            if (shieldFrame == 5) {
-                                isDestroyed = true;
-                            } else {
-                                shieldFrame++;
-                            }
-                            hitCounter = 0;
+                        if (hitCounter == 5) {
+                            isDestroyed = true;
+                            explosionSound.playAsynchronous("res/shieldExplosion.wav");
+                        } else {
+                            hitCounter++;
                         }
                     } else {
                         sprite.setDispose();
@@ -91,5 +103,10 @@ public class ShieldSprite extends ActiveSprite {
                 }
             }
         }
+    }
+
+    void explode() {
+        isDestroyed = true;
+        explosionSound.playAsynchronous("res/shieldExplosion.wav");
     }
 }

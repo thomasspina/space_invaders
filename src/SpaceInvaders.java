@@ -21,36 +21,33 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
-// TODO bug where one alien is ahead of the others
-// TODO add the flying saucer
+// TODO bug where one alien is ahead of the others in their movements and downshifts
 // TODO bug where aliens won't shift down when at edge of screen
 // TODO add a "reward" when you clear the board (and a graphic of some sort)
 // TODO fix concurrent modification error
-// TODO write journal and everything else to get 100
+// TODO refactor
+// TODO if an alien hits a shield it's game over
+// TODO sounds glitching when there is a lot of sound to play at once
 
 public class SpaceInvaders extends JFrame {
 	
-	final public static int FRAMES_PER_SECOND = 60;
-	final public static int SCREEN_HEIGHT = 600;
-	final public static int SCREEN_WIDTH = 750;
+	final private static int FRAMES_PER_SECOND = 60;
+	final private static int SCREEN_HEIGHT = 600;
+	final private static int SCREEN_WIDTH = 750;
 	final private static String HIGH_SCORE_FILE = "score.txt";
-	
 	private int xpCenter = SCREEN_WIDTH / 2;
 	private int ypCenter = SCREEN_HEIGHT / 2;
 	private double scale = 1;
 	private double xCenter = 0;		
 	private double yCenter = 0;
-	
 	private JPanel panel;
 	private JLabel lblScore;
 	private FadeLabel lblFadeLabel;
 	private JLabel lblMiddleLabel;
 	private JLabel lblScoreText;
 	BufferedImage livesCounterImage;
-
 	Timer fadeTimer;
 	private static Thread game;
-	
 	private long current_time = 0;
 	private long next_refresh_time = 0;
 	private long last_refresh_time = 0;
@@ -59,13 +56,10 @@ public class SpaceInvaders extends JFrame {
 	private boolean isPaused = false;
 	private float fadeDirection = -0.07f;
 	private String score;
-	
 	private boolean playing = false;
 	private boolean isGameOver = false;
-	
 	private ArrayList<ActiveSprite> activeSprites = null;
 	private ArrayList<StaticSprite> staticSprites = null;
-	
 	private KeyboardInput keyboard = new KeyboardInput();
 	private Serializer serializer = new Serializer();
 	private Screen screen = null;
