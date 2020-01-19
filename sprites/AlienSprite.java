@@ -8,7 +8,7 @@ public class AlienSprite extends ActiveSprite {
 	private static final int HEIGHT = 32;
 	private static final int WIDTH = 32;
 	private static final int X_SHIFT_DISTANCE = 10;
-	private static final int Y_SHIFT_DISTANCE = 15;
+	private static final int Y_SHIFT_DISTANCE = 20;
 	private static final double INITIAL_SHOOTING_PROBABILITY = 0.007;
 	private static final int INITIAL_SHIFT_PERIOD = 500;
 	private static Image[] explosionFrames;
@@ -89,8 +89,6 @@ public class AlienSprite extends ActiveSprite {
 		boolean isShooting;
 		previousTime += actual_delta_time;
 
-
-
 		if (!isDead) {
 			collidedWithObject(screen);
 
@@ -99,11 +97,15 @@ public class AlienSprite extends ActiveSprite {
 				onFirstFrame ^= true;
 				previousTime -= shiftPeriod;
 
-				if (isLanding) {
-					if (getCenterY() >= 242) {
+				if (isLanding || getCenterY() >= 238) {
+					if (getCenterY() >= 238) {
+						for (ActiveSprite sprite : screen.getActiveSprites()) {
+							if (sprite instanceof TurretSprite) {
+								((TurretSprite) sprite).explode();
+							}
+						}
 						((SpaceInvadersScreen) screen).alienHasLanded();
 					}
-
 					setCenterY(getCenterY() + Y_SHIFT_DISTANCE);
 				} else if (shiftY) {
 					shiftY = false;

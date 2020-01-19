@@ -21,12 +21,11 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
-// TODO bug where one alien is ahead of the others in their movements and downshifts
+// TODO bug where one alien is ahead of the others in their movements
 // TODO bug where aliens won't shift down when at edge of screen
 // TODO add a "reward" when you clear the board (and a graphic of some sort)
 // TODO fix concurrent modification error
 // TODO refactor
-// TODO if an alien hits a shield it's game over
 // TODO sounds glitching when there is a lot of sound to play at once
 
 public class SpaceInvaders extends JFrame {

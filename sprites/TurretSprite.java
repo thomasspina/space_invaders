@@ -10,8 +10,7 @@ public class TurretSprite extends ActiveSprite {
     private final static int HEIGHT = 32;
     private final static int RESPAWN_SHOOT_DELAY = 500;
     private final static int BLINK_FREQUENCY = 200;
-    private AudioPlayer explosionSound = new AudioPlayer();
-    private AudioPlayer respawnSound = new AudioPlayer();
+    private AudioPlayer sound = new AudioPlayer();
     private boolean alienIsLanding = false;
     private boolean isSpawning = true;
     private boolean isOnRightEdge = false;
@@ -49,7 +48,7 @@ public class TurretSprite extends ActiveSprite {
             System.err.println(e.toString());
         }
 
-        respawnSound.playAsynchronous("res/respawn.wav");
+        sound.playAsynchronous("res/respawn.wav");
     }
 
     @Override
@@ -83,7 +82,7 @@ public class TurretSprite extends ActiveSprite {
     public void update(Screen screen, KeyboardInput keyboard, long actual_delta_time) {
     	currentTime += actual_delta_time;
     	
-    	if (!isDead) {
+    	if (!isDead && !alienIsLanding) {
     		collidedWithObject(screen);
     		
     		boolean canShoot = true;
@@ -128,7 +127,7 @@ public class TurretSprite extends ActiveSprite {
             	}
             	
                 if (isDead) {
-                    explosionSound.playAsynchronous("res/turretExplosion.wav");
+                    sound.playAsynchronous("res/turretExplosion.wav");
                     sprite.setDispose();
                     break;
                 }
@@ -160,10 +159,10 @@ public class TurretSprite extends ActiveSprite {
 
     void explode() {
         isDead = true;
-        alienIsLanding = true;
-        explosionSound.playAsynchronous("res/turretExplosion.wav");
+        sound.playAsynchronous("res/turretExplosion.wav");
     }
 
     boolean isDead() { return isDead; }
 	boolean isAlienLanding() { return alienIsLanding; }
+	void setAlienIsLanding() { alienIsLanding = true; }
 }

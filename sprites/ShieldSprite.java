@@ -76,11 +76,13 @@ public class ShieldSprite extends ActiveSprite {
                         if (activeSprite instanceof ShieldSprite) {
                             ((ShieldSprite) activeSprite).explode();
                         } else if (activeSprite instanceof TurretSprite) {
-                            ((TurretSprite) activeSprite).explode();
+                            ((TurretSprite) activeSprite).setAlienIsLanding();
                         }
                     }
 
                     ((AlienSprite) sprite).land();
+                    explosionSound.playAsynchronous("res/shieldExplosion.wav");
+                    break;
                 }
 
             } else if (sprite instanceof ProjectileSprite) {
@@ -107,6 +109,5 @@ public class ShieldSprite extends ActiveSprite {
 
     void explode() {
         isDestroyed = true;
-        explosionSound.playAsynchronous("res/shieldExplosion.wav");
     }
 }
