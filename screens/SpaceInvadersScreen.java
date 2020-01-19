@@ -1,8 +1,11 @@
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class SpaceInvadersScreen extends Screen {
-	final private static double SAUCER_SPAWN_PROB = 0.0005;
+	final private static double SAUCER_SPAWN_PROB = 0.00001;
 	private boolean isPaused = false;
 	private boolean isGameOver = false;
 	private boolean isDeathAnimation = false;
@@ -54,17 +57,20 @@ public class SpaceInvadersScreen extends Screen {
 		if (!isPaused && !isGameOver) {
 			if (aliensCleared) {
 				try {
-					TimeUnit.MILLISECONDS.sleep(1000);
+					TimeUnit.MILLISECONDS.sleep(2000);
 				} catch (InterruptedException e) {
 					System.err.println(e.toString());
 				}
 				aliensCount = 55;
 				spawnAliens();
-				try {
-					TimeUnit.MILLISECONDS.sleep(1000);
-				} catch (InterruptedException e) {
-					System.err.println(e.toString());
+
+				for (int i = 0; i < getStaticSprites().size(); i++) {
+					if (getStaticSprites().get(i).getImage() != null) {
+						getStaticSprites().remove(i);
+						break;
+					}
 				}
+
 				aliensCleared = false;
 			}
 
@@ -185,6 +191,13 @@ public class SpaceInvadersScreen extends Screen {
 				break;
 			case 0:
 				aliensCleared = true;
+				BarrierSprite panel = new BarrierSprite(-75, -178,53,-50);
+				try {
+					panel.setImage(ImageIO.read(new File("res/roundClear/roundClear_0.png")));
+				} catch (IOException e) {
+					System.err.println(e.toString());
+				}
+				getStaticSprites().add(panel);
 				break;
 		}
 	}

@@ -16,18 +16,6 @@ public abstract class StaticSprite extends Sprite {
 	boolean getShowImage() {
 		return showImage;
 	}
-
-	public void setShowImage(boolean showImage) {
-		this.showImage = showImage;
-	}
-
-	public final void setMinX(double minX) {
-		this.minX = minX;
-	}
-	
-	public final void setMinY(double minY) {
-		this.minY = minY;
-	}
 	
 	public final double getMinX() {
 		return minX;
