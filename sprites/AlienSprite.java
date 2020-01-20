@@ -9,22 +9,26 @@ public class AlienSprite extends ActiveSprite {
 	private static final int WIDTH = 32;
 	private static final int X_SHIFT_DISTANCE = 10;
 	private static final int Y_SHIFT_DISTANCE = 20;
-	private static final double INITIAL_SHOOTING_PROBABILITY = 0.007;
 	private static final int INITIAL_SHIFT_PERIOD = 500;
-	private static Image[] explosionFrames;
+	private static final double INITIAL_SHOOTING_PROBABILITY = 0.007;
+
+	private final int POINT_VALUE;
+
 	private AudioPlayer explosionSound = new AudioPlayer();
-	final private int pointValue;
 	private Image movementFirstFrame;
 	private Image movementSecondFrame;
-	private int direction = 1;
-	private int explosionFrame = -1;
+	private static Image[] explosionFrames;
+
 	private boolean onFirstFrame = true;
 	private boolean isDead = false;
 	private boolean shiftY = false;
 	private boolean changedDirection = false;
 	private boolean isLanding = false;
-	private long previousTime = 0;
+
+	private int direction = 1;
+	private int explosionFrame = -1;
 	private int shiftPeriod = INITIAL_SHIFT_PERIOD;
+	private long previousTime = 0;
 	private double shootingProbability = INITIAL_SHOOTING_PROBABILITY;
 	
 	AlienSprite(int alienType, double centerX, double centerY) {
@@ -39,17 +43,17 @@ public class AlienSprite extends ActiveSprite {
 
 		switch(alienType) {
 			case 1:
-				pointValue = 10;
+				POINT_VALUE = 10;
 				firstFrameFile = new File("res/alien1/alien1_0.png");
 				secondFrameFile = new File("res/alien1/alien1_1.png");
 				break;
 			case 2:
-				pointValue = 20;
+				POINT_VALUE = 20;
 				firstFrameFile = new File("res/alien2/alien2_0.png");
 				secondFrameFile = new File("res/alien2/alien2_1.png");
 				break;
 			default:
-				pointValue = 30;
+				POINT_VALUE = 30;
 				firstFrameFile = new File("res/alien3/alien3_0.png");
 				secondFrameFile = new File("res/alien3/alien3_1.png");
 				break;
@@ -107,6 +111,7 @@ public class AlienSprite extends ActiveSprite {
 						((SpaceInvadersScreen) screen).alienHasLanded();
 					}
 					setCenterY(getCenterY() + Y_SHIFT_DISTANCE);
+
 				} else if (shiftY) {
 					shiftY = false;
 					changedDirection = true;
@@ -147,7 +152,7 @@ public class AlienSprite extends ActiveSprite {
 
 
 				if (isDead) {
-					((SpaceInvadersScreen) screen).addScore(pointValue);
+					((SpaceInvadersScreen) screen).addScore(POINT_VALUE);
 					explosionSound.playAsynchronous("res/alienExplosion.wav");
 					sprite.setDispose();
 					break;

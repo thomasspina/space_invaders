@@ -1,10 +1,4 @@
 import java.awt.Image;
-import java.awt.Rectangle;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import javax.imageio.ImageIO;
 
 public abstract class ActiveSprite extends Sprite {
 	private double centerX = 0;
@@ -64,22 +58,6 @@ public abstract class ActiveSprite extends Sprite {
 
 	void setHeight(double height) {
 		this.height = height;
-	}
-	
-	public final void addCenterX(double delta) {
-		centerX += delta;		
-	}
-
-	final void addCenterY(double delta) {
-		centerY += delta;		
-	}
-	
-	public final void setMinX(double minX) {
-		centerX =  minX + (width / 2);
-	}
-
-	public final void setMinY(double minY) {
-		centerY = minY + (height / 2);
 	}
 				
 	boolean getDispose() {

@@ -4,7 +4,6 @@ import java.awt.Container;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -21,38 +20,22 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
-// TODO bug where one alien is ahead of the others in their movements
-// TODO bug where aliens won't shift down when at edge of screen
-// TODO add a "reward" when you clear the board (and a graphic of some sort)
-// TODO fix concurrent modification error
-// TODO refactor
-// TODO sounds glitching when there is a lot of sound to play at once
-
 public class SpaceInvaders extends JFrame {
 	
 	final private static int FRAMES_PER_SECOND = 60;
 	final private static int SCREEN_HEIGHT = 600;
 	final private static int SCREEN_WIDTH = 750;
 	final private static String HIGH_SCORE_FILE = "score.txt";
-	private int xpCenter = SCREEN_WIDTH / 2;
-	private int ypCenter = SCREEN_HEIGHT / 2;
 	private double scale = 1;
-	private double xCenter = 0;		
-	private double yCenter = 0;
-	private JPanel panel;
 	private JLabel lblScore;
 	private FadeLabel lblFadeLabel;
 	private JLabel lblMiddleLabel;
 	private JLabel lblScoreText;
-	BufferedImage livesCounterImage;
-	Timer fadeTimer;
-	private static Thread game;
+	private BufferedImage livesCounterImage;
+	private Timer fadeTimer;
 	private long current_time = 0;
-	private long next_refresh_time = 0;
 	private long last_refresh_time = 0;
-	private long minimum_delta_time = 1000 / FRAMES_PER_SECOND;
 	private long actual_delta_time = 0;
-	private boolean isPaused = false;
 	private float fadeDirection = -0.07f;
 	private String score;
 	private boolean playing = false;
@@ -63,7 +46,7 @@ public class SpaceInvaders extends JFrame {
 	private Serializer serializer = new Serializer();
 	private Screen screen = null;
 	
-	public SpaceInvaders() {
+	private SpaceInvaders() {
 		super();
 		setFocusable(true);
 		setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -105,6 +88,7 @@ public class SpaceInvaders extends JFrame {
 		cp.setBackground(Color.BLACK);
 		cp.setLayout(null);
 
+		JPanel panel;
 		panel = new DrawPanel();
 		panel.setLayout(null);
 		panel.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -138,9 +122,7 @@ public class SpaceInvaders extends JFrame {
 		getContentPane().add(lblFadeLabel);
 		getContentPane().setComponentZOrder(lblFadeLabel, 0);
 		
-		fadeTimer = new Timer(100, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+		fadeTimer = new Timer(100, (ActionEvent e) -> {
                 float alpha = lblFadeLabel.getAlpha();
                 alpha += fadeDirection;
                 if (alpha < 0) {
@@ -151,7 +133,6 @@ public class SpaceInvaders extends JFrame {
                     fadeDirection = -0.07f;
                 }
                 lblFadeLabel.setAlpha(alpha);
-            }
         });
 		
 		fadeTimer.setRepeats(true);
@@ -163,12 +144,14 @@ public class SpaceInvaders extends JFrame {
 		SpaceInvaders spaceInvaders = new SpaceInvaders();
 		spaceInvaders.setVisible(true);
 		
-		game = new Thread(() -> spaceInvaders.animationLoop());
+		Thread game = new Thread(spaceInvaders::animationLoop);
 		
 		game.start();
 	}
 	
 	private void animationLoop() {
+		long minimum_delta_time = 1000 / FRAMES_PER_SECOND;
+		long next_refresh_time;
 
 		while(true) {
 			last_refresh_time = System.currentTimeMillis();
@@ -190,6 +173,7 @@ public class SpaceInvaders extends JFrame {
 			keyboard.poll();
 			handleKeyboardInput();
 			updateTime();
+
 			if (playing) {
 				int score = ((SpaceInvadersScreen) screen).getScore();
 				if (((SpaceInvadersScreen) screen).isGameOver()) {
@@ -256,7 +240,7 @@ public class SpaceInvaders extends JFrame {
 	
 	private void updateTime() {
 		current_time = System.currentTimeMillis();
-		actual_delta_time = (isPaused ? 0 : current_time - last_refresh_time);
+		actual_delta_time = current_time - last_refresh_time;
 		last_refresh_time = current_time;
 	}
 	
@@ -267,10 +251,8 @@ public class SpaceInvaders extends JFrame {
 			}
 			
 			for (StaticSprite staticSprite : staticSprites) {
-				if (staticSprite.getShowImage()) {
-					if (staticSprite.getImage() != null) {
-						g.drawImage(staticSprite.getImage(), translateX(staticSprite.getMinX()), translateY(staticSprite.getMinY()), scaleX(staticSprite.getWidth()), scaleY(staticSprite.getHeight()), null);
-					}
+				if (staticSprite.getImage() != null) {
+					g.drawImage(staticSprite.getImage(), translateX(staticSprite.getMinX()), translateY(staticSprite.getMinY()), scaleX(staticSprite.getWidth()), scaleY(staticSprite.getHeight()), null);
 				}
 			}
 
@@ -292,28 +274,28 @@ public class SpaceInvaders extends JFrame {
 			}
 
 		}
-		
+
 		private int translateX(double x) {
-			return xpCenter + scaleX(x - xCenter);
+			return SCREEN_WIDTH / 2 + scaleX(x);
 		}
-		
 		private int scaleX(double x) {
 			return (int) Math.round(scale * x);
 		}
+
 		private int translateY(double y) {
-			return ypCenter + scaleY(y - yCenter);
+			return SCREEN_HEIGHT / 2 + scaleY(y);
 		}		
 		private int scaleY(double y) {
 			return (int) Math.round(scale * y);
 		}
 	}
 	
-	protected void this_windowClosing(WindowEvent e) {
+	private void this_windowClosing(WindowEvent e) {
 		try {
 			serializer.serialize(score, HIGH_SCORE_FILE);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		dispose();	
+		e.getWindow().dispose();
 	}
 }

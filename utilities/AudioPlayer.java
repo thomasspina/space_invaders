@@ -10,24 +10,8 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class AudioPlayer implements LineListener {
-
-	private static boolean stopAll = false;
-
-	private Thread audioThread = null;
 	private boolean playCompleted = true;
-	private boolean stop = false; 
-
-	public boolean isPlayCompleted() {
-		return playCompleted;
-	}
-
-	public void setStop(boolean stop) {
-		this.stop = stop;
-	}
-
-	public static void setStopAll(boolean stopAll) {
-		AudioPlayer.stopAll = stopAll;
-	}
+	private boolean stop = false;
 
 	@Override
 	public void update(LineEvent event) {
@@ -40,7 +24,9 @@ public class AudioPlayer implements LineListener {
 	}
 
 	void playAsynchronous(String file)
-	{	    	
+	{
+		Thread audioThread;
+
 		stop = false;
 		audioThread = new Thread(() -> {
 			playCompleted = false;
@@ -49,9 +35,6 @@ public class AudioPlayer implements LineListener {
 		});
 
 		audioThread.start();
-
-		audioThread = null;
-
 	}	 
 
 	private void play(String audioFilePath) {
@@ -80,7 +63,7 @@ public class AudioPlayer implements LineListener {
 				} catch (InterruptedException ex) {
 					ex.printStackTrace();
 				}
-				if (stop || stopAll) {
+				if (stop) {
 					audioClip.stop();
 					playCompleted = true;
 				}

@@ -3,19 +3,14 @@ import java.awt.Image;
 public abstract class StaticSprite extends Sprite {
 
 	protected static Image image;
-	protected boolean showImage = true;
-	protected double minX = 0;
-	protected double minY = 0;
-	protected double maxX = 0;
-	protected double maxY = 0;
+	double minX = 0;
+	double minY = 0;
+	double maxX = 0;
+	double maxY = 0;
 
 	public abstract Image getImage();
 	
 	StaticSprite() {}
-
-	boolean getShowImage() {
-		return showImage;
-	}
 	
 	public final double getMinX() {
 		return minX;

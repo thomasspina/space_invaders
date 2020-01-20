@@ -107,7 +107,7 @@ public class ShieldSprite extends ActiveSprite {
         }
     }
 
-    void explode() {
+    private void explode() {
         isDestroyed = true;
     }
 }

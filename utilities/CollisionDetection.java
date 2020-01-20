@@ -1,6 +1,6 @@
 import java.awt.image.BufferedImage;
 
-public class CollisionDetection {
+class CollisionDetection {
 	static boolean overlaps(double a_left, double a_top, double a_right, double a_bottom, double b_left, double b_top, double b_right, double b_bottom) {
 		boolean a_to_left_of_b = (a_right < b_left);
 		boolean a_to_right_of_b = (a_left > b_right);
@@ -13,14 +13,7 @@ public class CollisionDetection {
 		return (horizontal_overlap && vertical_overlap);
 	}
 
-	private static boolean inside(double a_left, double a_top, double a_right, double a_bottom, double b_left, double b_top, double b_right, double b_bottom) {
-		boolean x_inside = ((b_left <= a_left) && (a_right <= b_right));
-		boolean y_inside = ((b_top <= a_top) && (a_bottom <= b_bottom));
-
-		return x_inside && y_inside;
-	}
-
-	public static boolean pixelBasedOverlaps(Sprite spriteA, Sprite spriteB) {
+	static boolean pixelBasedOverlaps(Sprite spriteA, Sprite spriteB) {
 
 		if (!overlaps(spriteA.getMinX(), spriteA.getMinY(), spriteA.getMaxX(), spriteA.getMaxY(),
 				spriteB.getMinX(), spriteB.getMinY(), spriteB.getMaxX(), spriteB.getMaxY())) {
@@ -64,7 +57,10 @@ public class CollisionDetection {
 
 	}
 
-	public static boolean covers (double a_left, double a_top, double a_right, double a_bottom, double b_left, double b_top, double b_right, double b_bottom) {
-		return inside(b_left, b_top, b_right, b_bottom, a_left, a_top, a_right, a_bottom);
+	static boolean covers(double a_left, double a_top, double a_right, double a_bottom, double b_left, double b_top, double b_right, double b_bottom) {
+		boolean x_inside = ((b_left <= a_left) && (a_right <= b_right));
+		boolean y_inside = ((b_top <= a_top) && (a_bottom <= b_bottom));
+
+		return x_inside && y_inside;
 	}
 }

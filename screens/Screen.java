@@ -1,40 +1,13 @@
 import java.util.ArrayList;
 
 public abstract class Screen {
-
-	private boolean complete = false;
-
-	private double accelarationX = 0; //per second per second
-	private double accelarationY = 600; //per second per second
-
-	private ActiveSprite player1 = null;
-	protected ArrayList<ActiveSprite> activeSprites;
-	protected ArrayList<StaticSprite> staticSprites;
+	ArrayList<ActiveSprite> activeSprites;
+	ArrayList<StaticSprite> staticSprites;
 	private ArrayList<ActiveSprite> disposalList = new ArrayList<>();
 
 	Screen() {
 		activeSprites = new ArrayList<>();
 		staticSprites = new ArrayList<>();
-	}
-	
-	public boolean isComplete() {
-		return complete;
-	}
-
-	public void setComplete(boolean complete) {
-		this.complete = complete;
-	}
-
-	public double getAccelarationX() {
-		return accelarationX;
-	}
-
-	public double getAccelarationY() {
-		return accelarationY;
-	}
-
-	protected ActiveSprite getPlayer1() {
-		return player1;
 	}
 
 	ArrayList<ActiveSprite> getActiveSprites() {
@@ -54,7 +27,6 @@ public abstract class Screen {
     }
     
     void disposeSprites() {
-
 		for (ActiveSprite activeSprite : activeSprites) {
     		if (activeSprite.getDispose()) {
     			disposalList.add(activeSprite);

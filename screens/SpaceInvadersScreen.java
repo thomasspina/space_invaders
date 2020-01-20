@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class SpaceInvadersScreen extends Screen {
-	final private static double SAUCER_SPAWN_PROB = 0.00001;
+	final private static double SAUCER_SPAWN_PROB = 0.00005;
 	private boolean isPaused = false;
 	private boolean isGameOver = false;
 	private boolean isDeathAnimation = false;

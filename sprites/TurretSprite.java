@@ -10,20 +10,23 @@ public class TurretSprite extends ActiveSprite {
     private final static int HEIGHT = 32;
     private final static int RESPAWN_SHOOT_DELAY = 500;
     private final static int BLINK_FREQUENCY = 200;
+
     private AudioPlayer sound = new AudioPlayer();
+    private Image turretImage;
+    private Image blinkTurretImage;
+    private Image[] explosionFrames;
+
+    private boolean onFirstRespawnFrame = true;
     private boolean alienIsLanding = false;
     private boolean isSpawning = true;
     private boolean isOnRightEdge = false;
     private boolean isOnLeftEdge = false;
     private boolean isDead = false;
-    private Image turretImage;
-    private Image blinkTurretImage;
-    private Image[] explosionFrames;
+
     private int explosionFrame = -1;
     private int spawnBlinkCount = 0;
     private long previousBlink = 0;
     private long currentTime = 0;
-    private boolean onFirstRespawnFrame = true;
 
     TurretSprite(double centerX, double centerY) {
         super();
